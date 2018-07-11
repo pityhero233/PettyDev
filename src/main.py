@@ -25,8 +25,8 @@ String = ""
 screenx = 640#camera resolution
 screeny = 320
 
-systemDevice = "/dev/video2"
-directPlayDevice = "/dev/video1"
+systemDevice = "/dev/video2"#volatile
+directPlayDevice = "/dev/video1"#volatile
 
 arduinoLoc = "/dev/ttyACM0"#volatile
 blunoLoc = "/dev/ttyACM1"#volatile
@@ -46,17 +46,19 @@ foodAmount = 0;#TODO
 waterAmount = 0;
 motion = 0;
 
-print "step 0 of 6:perform arduino detection"
-arduino = serial.Serial(arduinoLoc,57600,timeout=1.5,rtscts=True,dsrdtr=True)#FIX
+normalSpeed = 40;
+
+print "step 1 of 6:perform arduino detection"
+arduino = serial.Serial(arduinoLoc,9600,timeout=1.5,rtscts=True,dsrdtr=True)#FIX
 print("using ",arduino.name," for arduino")
 bluno = serial.Serial(blunoLoc,115200,timeout=1.5)
 print("using",bluno.name," for bluno")
 uno = serial.Serial(unoLoc,9600,timeout=1.5)
 print("using",uno.name," for uno")
 
-print "Now running the Serial check."
-print "please put your hand before the ultrasound detector"
-while (uno.read_all()))#TODO
+
+# print "Now running the Serial check."
+# print "please put your hand before the ultrasound detector"
 
 
 def scanUno():
@@ -79,7 +81,7 @@ def takePhoto():#take a photo using outside func
         return pic
     except:
         print "takePhoto Error"
-
+print "Step 2 of 6 : test navigate camera..."
 currentPhoto=takePhoto()#test if the cam is success
 
 class Command(Enum):
@@ -92,7 +94,7 @@ class Command(Enum):
     SHOOT = 8
 
 class systemState(Enum):
-    empty = 0
+#    empty = 0 #useless , it's impossible
     loading = 1
     handmode = 2
     automode_normal = 3
@@ -232,20 +234,20 @@ def callUno(action,parameter=-1):
         print("E:arduino not writable")
     if (parameter==-1):
         if action==Command.STOP:
-            arduino.write('1 000')
-            time.sleep(0.5)
-            print('writed 1 000')
+            arduino.write('111')
+            # time.sleep(0.5)
+            print('writed 111')
         else:
             arduino.write(str(action)+" "+str(normalSpeed))
-            time.sleep(0.5)
+            # time.sleep(0.5)
             print('writed ',str(action)+" "+str(normalSpeed))
     else:
         if action==Command.STOP:
-            arduino.write('1 000')
-            time.sleep(0.5)
-            print('writed 1 000')
+            arduino.write('111')
+            #time.sleep(0.5)
+            print('writed 111')
         else:
-            if parameter>0 and parameter<=999:
+            if parameter>0 and parameter<=99:
                 arduino.write(str(action)+" "+str(parameter))
                 time.sleep(0.5)
                 print('writed ',str(action)+" "+str(normalSpeed))
@@ -361,23 +363,20 @@ def getDirection():#get the base 's direction
 
 
 #---------------------------------------------------------------------------------
-state = systemState.loading
-print "step 1 of 6:read user preferences"
+state = systemState.handmode
+print "step 3 of 6:read user preferences"
 with open("UserPreferences.pk","rb") as usf:
     strategy = pickle.load(usf)
     print("strategy=",strategy)
-print "step 2 of 6:start user respond service"
+print "step 4 of 6:start user respond service"
 thread.start_new_thread(start_http_handler,())
-print "step 3 of 6:start direct play service"
+print "step 5 of 6:start direct play service"
 thread.start_new_thread(start_service,())
-print "PASSED step 4 of 6:start photoPool service"
-# thread.start_new_thread(photoPool,(cam2,))#FIXED
-# using outer func instead
-print "step 5 of 6:start dog mood processing service"
+print "step 6 of 6:start dog mood processing service"
 _ = bluno.read_all()#flush the pool
 thread.start_new_thread(mood,())
 thread.start_new_thread(dogAlarm,())
-print "step 6 of 6:start autoretrieve service"
+print "step 7 of 6:start autoretrieve service"
 while True:
     #print "R:state=<SystemState>",state
     if math.fabs(uMomentum*2.0)<=0.5:

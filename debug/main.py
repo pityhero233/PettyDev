@@ -13,7 +13,7 @@ import random
 from flask import Flask
 import cv2
 from enum import Enum
-
+normalSpeed = 11
 NULL = 424242#MAGIC NUM
 
 app = Flask("Petty")
@@ -39,11 +39,11 @@ todayMomentum=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]#1-24h
 uMomentum=0.0
 hMomentum=0.0
 hLastEntry=-1#last time update todayMomentum
-print "step 0 of 6:perform arduino detection"
-arduino = serial.Serial(arduinoLoc,57600,timeout=1.5,rtscts=True,dsrdtr=True)#FIX
-print("using ",arduino.name," for arduino")
-bluno = serial.Serial(blunoLoc,115200,timeout=1.5)
-print("using",bluno.name," for bluno")
+#print "step 0 of 6:perform arduino detection"
+arduino = serial.Serial(arduinoLoc,9600,timeout=1.5,rtscts=True,dsrdtr=True)#FIX
+#print("using ",arduino.name," for arduino")
+#bluno = serial.Serial(blunoLoc,115200,timeout=1.5)
+#print("using",bluno.name," for bluno")
 
 def scanUno():
     port_list = list(serial.tools.list_ports.comports())
@@ -66,7 +66,7 @@ def takePhoto():#take a photo using outside func
     except:
         print "takePhoto Error"
 
-currentPhoto=takePhoto()#test if the cam is success
+#currentPhoto=takePhoto()#test if the cam is success
 
 class Command(Enum):
                  # 0->STOP  1->FORWARD  2->BACK   3->LEFT   4->RIGHT   5->TURNLEFT  6->TURNRIGHT
@@ -91,7 +91,7 @@ class userPreference(Enum):
     RandomShoot = 1
     TimelyShoot = 2
 
-state = systemState.empty
+state = systemState.handmode
 strategy = userPreference.PlayDog#TODO
 #-------------HTTP response part
 @app.route('/')
@@ -215,9 +215,9 @@ def callUno(action,parameter=-1):
         print("E:arduino not writable")
     if (parameter==-1):
         if action==Command.STOP:
-            arduino.write('1 000')
+            arduino.write('111')
             time.sleep(0.5)
-            print('writed 1 000')
+            print('writed 111')
         else:
             arduino.write(str(action)+" "+str(normalSpeed))
             time.sleep(0.5)
@@ -321,7 +321,7 @@ def getBlueDot(frame2):#returns a num[] contains [x,y,r]
         		maxPercentageContour = contour
 
         if (maxPercentageContour!=None):
-        	M=cv2.moments(maxPercentageContour)
+            M=cv2.moments(maxPercentageContour)
             center = (int(M["m10"]/M["m00"]), int(M["m01"] / M["m00"]))
             ((x,y),radius) = cv2.minEnclosingCircle(contour)
             cv2.circle(frame2,(int(x),int(y)),int(radius),(0,255,255),2)
@@ -365,9 +365,8 @@ def TennisDetect(frame2):#capture a picture and perform a tennis detect
 
 
 #---------------------------------------------------------------------------------
-pic = takePhoto()
-cv2.namedWindow("test",cv2.WINDOW_AUTOSIZE)
-cv2.imshow("test",pic)
-cv2.waitKey(0)
-print "now call tennisdetect.."
-print getBlueDot(pic)
+print "step 2 of 6:start user respond service"
+thread.start_new_thread(start_http_handler,())
+while True:
+	print "i am running!"
+	time.sleep(1)
