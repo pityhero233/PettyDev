@@ -16,6 +16,9 @@ import cv2
 from enum import Enum
 
 NULL = 424242#MAGIC NUM
+FRAME_INTERVAL = 0.25
+MAX_BALLLENGTH = 10#FIXME
+TURN_THRESHOLD = 5
 
 app = Flask("Petty")
 
@@ -28,8 +31,8 @@ screeny = 320
 systemDevice = "/dev/video2"#volatile
 directPlayDevice = "/dev/video1"#volatile
 
-arduinoLoc = "/dev/ttyACM0"#volatile
-blunoLoc = "/dev/ttyACM1"#volatile
+arduinoLoc = "/dev/ttyACM1"#volatile
+blunoLoc = "/dev/ttyACM0"#volatile
 unoLoc = "/dev/ttyACM2"#volatile
 
 lastReceiveBluno = time.time()
@@ -53,8 +56,8 @@ arduino = serial.Serial(arduinoLoc,9600,timeout=1.5,rtscts=True,dsrdtr=True)#FIX
 print("using ",arduino.name," for arduino")
 bluno = serial.Serial(blunoLoc,115200,timeout=1.5)
 print("using",bluno.name," for bluno")
-uno = serial.Serial(unoLoc,9600,timeout=1.5)
-print("using",uno.name," for uno")
+# uno = serial.Serial(unoLoc,9600,timeout=1.5)
+# print("using",uno.name," for uno")
 
 
 # print "Now running the Serial check."
@@ -102,12 +105,15 @@ class systemState(Enum):
     automode_retrieving_station = 5
     automode_moving_obstacle = 6
 
+    automode_navigate = 7
+    automode_stop = 8
+
 class userPreference(Enum):
     PlayDog = 0
     RandomShoot = 1
     TimelyShoot = 2
 
-state = systemState.empty
+state = systemState.loading
 strategy = userPreference.PlayDog#TODO
 #-------------HTTP response part
 @app.route('/')
@@ -149,14 +155,14 @@ def down():
 def turnleft():
     print "from flask:begin write turnleft"
     if state==systemState.handmode:
-        callUno(Command.TURNLEFT,150)
+        callUno(Command.TURNLEFT,normalSpeed)
     print "from flask:end write turnleft"
     return 'left done'
 @app.route('/turnright')
 def turnright():
     print "from flask:begin write turnright"
     if state==systemState.handmode:
-        callUno(Command.TURNRIGHT,150)
+        callUno(Command.TURNRIGHT,normalSpeed)
     print "from flask:begin write turnright"
     return 'right done'
 @app.route('/up')
@@ -211,6 +217,11 @@ def debug_print():#print today's momentum.
 def debug_printB():#MAGIC HACK FIXME
     print '''{8, 10, 12, 13, 15, 13, 31, 35, 45, 46, 42, 52, 71, 67, 70, 41, 35, \
 36, 27, 25, 25, 31, 10, 8}'''
+
+def preciseTurn(angle):
+    pass;
+
+
 
 #EOF---------------------
 
@@ -363,7 +374,7 @@ def getDirection():#get the base 's direction
 
 
 #---------------------------------------------------------------------------------
-state = systemState.handmode
+state = systemState.loading
 print "step 3 of 6:read user preferences"
 with open("UserPreferences.pk","rb") as usf:
     strategy = pickle.load(usf)
@@ -383,95 +394,38 @@ while True:
         print "--"
     else:
         print "心情"+str(uMomentum*2.0)
+
     if (state==systemState.loading):
         print "handmode started."
         state=systemState.handmode
-    elif (state==systemState.automode_normal or state==systemState.automode_shooting):#fixed
+    elif (state==systemState.automode_normal ):#fixed #or state==systemState.automode_shooting
         dogmood = uMomentum*2.0
         print "uDogmood=",dogmood
         if dogmood>50:
-            state=systemState.automode_shooting
+            #state=systemState.automode_shooting
             p1 = takePhoto();time.sleep(1); p2 = takePhoto();
             if not isDangerous(p1,p2,320,240) and isFineToShoot(): #HACK
                 callUno(Command.SHOOT)
                 print "right to shoot:shoot performed."
                 shootTryout = 0;
                 time.sleep(random.randint(5,20))
-                state=systemState.automode_retrieve
+                state=systemState.automode_normal
+    elif (state==systemState.automode_retrieving_station):
+        p = getBlueDot();
+        if (p!=None):
+            ang = getDirection(p[0],p[1])
+            if (math.fabs(ang)>TURN_THRESHOLD):
+                print "now turning "+ang+"angles..."
+                preciseTurn(ang);
+                print "turn done."
+            elif (p[2]>=MAX_BALLLENGTH):
+                callUno(Command.STOP);
+                state = systemState.automode_navigate;
+                print "base arrived. now start navigate."
             else:
-                print "isDangerous=",isDangerous(p1,p2,320,240)
-                print "going right"
-                callUno(Command.TURNRIGHT,300)
-                time.sleep(4)
-                print "stop"
-                #time.sleep(5)
-                #print "stop completed"
-                shootTryout = shootTryout+1
-                print "shootTryout=",shootTryout
-                if shootTryout>10:
-                    shootTryout = 0;
-                    state = systemState.automode_normal
-                    print("dog not good,shoot another time.")
-                    lastShootTime = time.time()
-    elif (state==systemState.automode_retrieve):
-        pic = takePhoto();
-        if 1!=-1:#take success HACK FIXME
-            ans = TennisDetect(pic)
-            if ans!=[0,0,0]:#ball found
-                ballHistory.append(ans)
-                if len(ballHistory)>10:#clear data,
-                    for i in range(0,5):
-                        ballHistory.pop(i)
-                _sx=0;_sy=0;_numbercnt=0#calc if the ball has been stopped
-                for (x,y,r) in ballHistory:
-                    _sx=_sx+x
-                    _sy=_sy+y
-                    _numbercnt=_numbercnt+1
-                avgx = _sx/_numbercnt
-                avgy = _sy/_numbercnt
-                print "BALLavgx = ",avgx,"BALLavgy = ",avgy
-                print "pickAngle=",math.fabs(RadJudge(ans[0],ans[1],screenx,screeny))
-                if dist(ans[0],ans[1],avgx,avgy)<=pickupThreshold:#ball stopped
-                    if math.fabs(RadJudge(ans[0],ans[1],screenx,screeny))<=pickAngleThreshold:#angle right
-                            state=systemState.automode_retrieve_go
-                    else:
-                        if math.fabs(RadJudge(ans[0],ans[1],screenx,screeny))>0:
-                            callUno(Command.TURNRIGHT,100)
-                            time.sleep(1)
-                        else:
-                            callUno(Command.TURNLEFT,100)
-                            time.sleep(1)
-            else:#ball not found
-                if len(ballHistory)>0:#trying to track ball based on last appear position
-                    lastID = len(ballHistory)-1
-                    if math.fabs(RadJudge(ballHistory[lastID][0],ballHistory[lastID][1],screenx,screeny))<=pickAngleThreshold:#angle right
-                        state=systemState.automode_retrieve_go
-                    else:
-                        if math.fabs(RadJudge(ballHistory[lastID][0],ballHistory[lastID][1],screenx,screeny))>0:
-                            callUno(Command.TURNRIGHT,150)
-                            time.sleep(1)
-                            callUno(Command.STOP)
-                            time.sleep(1)
-                        else:
-                            callUno(Command.TURNLEFT,150)
-                            time.sleep(1)
-                            callUno(Command.STOP)
-                            time.sleep(1)
-    elif (state==systemState.automode_retrieve_go):
-        pic = takePhoto()
-        if 1!=-1:#HACK FIXME
-            loc = TennisDetect(pic)
-            if loc!=[0,0,0]:#FIXME
+                print("I am forwarding!")
                 callUno(Command.FORWARD);
-                pass#SHOULD BE JUDGE WHEN TO PICK THE BALL AND EVENTUALLY PICK IT
-                if (loc[2]>=73):#FIXME
-                    callUno(Command.STOP);
-                    print "close enough!"
-                    time.sleep(2)
-                    callUno(Command.PICK)
-                    time.sleep(2)
-                    state=systemState.automode_normal
-            else:
-                print "ball out-of-sight"
-                state=systemState.automode_retrieve
-    time.sleep(1)#give it a rest
+        else:
+            print "unable to find base station."
+
+    time.sleep(FRAME_INTERVAL)
