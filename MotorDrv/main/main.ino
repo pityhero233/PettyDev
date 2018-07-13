@@ -1,13 +1,17 @@
-//#include <PID_v1.h>
+#include <PID_v1.h>
 #include <Servo.h>
 #include <assert.h>
 #define FRAME_DURATION 50
+#define COLOR_THRESHOLD 150
+#define DANGER_THRESHOLD 15
 int SpeedToPWM[256];
 double lPulse,rPulse;
-double lPWM=50,rPWM=50;
-
-//const int TargetSpeed = 70;//FIXME
-double Kp=0.4, Ki=5.5, Kd=0;
+double lPWM=70,rPWM=70;
+int totMode=0 ;// 0 - no detection 1 - fore detection 2 - both detection
+double TargetSpeed = 70;//FIXME
+double Kp=0.4, Ki=0.2, Kd=0.06;
+double befmode = 0;
+//double  Kp=0, Ki=0,Kd=0;
 const int fullcycle = 15700;
 
 const int shootPort = 26;//volatile
@@ -19,6 +23,10 @@ const int rSpeedPort = 3;
 const int rControlPortA = 24;
 const int rControlPortB = 25;
 const int rReturnPort = 19;
+const int lUltraSoundTrigPort = 29;
+const int rUltraSoundTrigPort = 31;
+const int lUltraSoundEchoPort = 28;
+const int rUltraSoundEchoPort = 30;
 unsigned long currentMillis,previousMillis;
 
 // bool handmode = false;//默认是专业人员的耐心模式（automode）
@@ -27,13 +35,14 @@ const bool left = true;
 const bool right = false;
 int mode=0;
 int argument=100;//input speed (if have any)
-
+int lDanger = 0;
+int rDanger = 0;
 //signed int beginRotatePulse = 0;//- means left , + means right
 signed int pulseLeftToDo = 0;
 //bool directionLeftToDo = left;
 
-// PID PID_L(&lSpeed, &lPWM, &TargetSpeed, Kp, Ki, Kd, DIRECT);
-// PID PID_R(&rSpeed, &rPWM, &TargetSpeed, Kp, Ki, Kd, DIRECT);
+PID PID_L(&lPulse, &lPWM, &TargetSpeed, Kp, Ki, Kd, DIRECT);
+PID PID_R(&rPulse, &rPWM, &TargetSpeed, Kp, Ki, Kd, DIRECT);
 
 void letForward(bool isLeftPort){
   if (isLeftPort){
@@ -96,17 +105,22 @@ void setup()
     pinMode(rSpeedPort,OUTPUT);
     pinMode(lReturnPort,INPUT);
     pinMode(rReturnPort,INPUT);
+    pinMode(lUltraSoundTrigPort,OUTPUT);
+    pinMode(rUltraSoundTrigPort,OUTPUT);
+    pinMode(lUltraSoundEchoPort,INPUT);
+    pinMode(rUltraSoundEchoPort,INPUT);
     attachInterrupt(digitalPinToInterrupt(lReturnPort) , accumulateLPulse, CHANGE);
     attachInterrupt(digitalPinToInterrupt(rReturnPort) , accumulateRPulse, CHANGE);
-    // PID_L.SetMode(AUTOMATIC);
-    // PID_L.SetSampleTime(50);
-    // PID_R.SetMode(AUTOMATIC);
-    // PID_R.SetSampleTime(50);
+ //   PID_L.SetMode(AUTOMATIC);
+//    PID_L.SetSampleTime(50);
+ //   PID_R.SetMode(AUTOMATIC);
+//    PID_R.SetSampleTime(50);
   }
 
 void parseArguments(){
   char* str;
   if (Serial.readBytes(str,Serial.available())){
+    if (((char)str[0]-'0') ==6 ) befmode = mode;
     mode = (char)str[0]-'0';
     argument = ((char)str[1]-'0')*10+((char)str[2]-'0');
   }
@@ -114,17 +128,60 @@ void parseArguments(){
     mode = -1;
   }
 }
+
+void updateDetectors(){
+  //1.color detectors
+  int raw1,raw2;
+  raw1 = analogRead(0);
+  raw2 = analogRead(1);
+  if ((raw1>COLOR_THRESHOLD)&&(raw2>COLOR_THRESHOLD)){
+    totMode = 0;
+  }
+  else if ((raw1<COLOR_THRESHOLD)&&(raw2>COLOR_THRESHOLD)){
+    totMode = 1;
+  }
+  else if ((raw1<COLOR_THRESHOLD)&&(raw2<COLOR_THRESHOLD)){
+    totMode=2;
+  }
+  else{
+    totMode = 3;
+  }
+  //2.ultra detectors
+  static float d1,d2;
+  digitalWrite(lUltraSoundTrigPort,LOW);
+  delayMicroseconds(2);
+  digitalWrite(lUltraSoundTrigPort,HIGH);
+  delayMicroseconds(10);
+  digitalWrite(lUltraSoundTrigPort,LOW);
+  d1=pulseIn(lUltraSoundEchoPort,HIGH)/58.00;     //检测脉冲宽度，并计算出距离
+   digitalWrite(rUltraSoundTrigPort,LOW);
+  delayMicroseconds(2);
+  digitalWrite(rUltraSoundTrigPort,HIGH);
+  delayMicroseconds(10);
+  digitalWrite(rUltraSoundTrigPort,LOW);
+  d2=pulseIn(rUltraSoundEchoPort,HIGH)/58.00;     //检测脉冲宽度，并计算出距离
+  Serial.println(d1);
+  Serial.println(d2);
+  lDanger = (d1>DANGER_THRESHOLD)?0:1;
+  rDanger = (d2>DANGER_THRESHOLD)?0:1;
+}
+
+
 void loop()
 {
     currentMillis = millis ();
     if(Serial.available()>0)
     {
-        parseArguments();//TODO
+        parseArguments();
+
+        }
+       
                 if( currentMillis - previousMillis >= FRAME_DURATION )
         {
             previousMillis = currentMillis ;
-            // PID_L.Compute();PID_R.Compute();
-            if (true)
+ //           PID_L.Compute();PID_R.Compute();
+            // Serial.print("lPWM=");Serial.print(lPulse);Serial.print(",rPWM=");Serial.println(rPulse);
+              if (true)
             {
                 switch(mode)
                 {
@@ -148,9 +205,13 @@ void loop()
                 case 5:
                     SHOOT();
                     break;
-                // case 6:
-                //     handmode = true;//用户
-                //     break;
+                case 6:
+                    updateDetectors();
+                    Serial.print(lDanger);
+                    Serial.print(rDanger);
+                    Serial.println(totMode);
+                    mode = befmode;
+                    break;
                 // case 7:
                 //     handmode = false;//专业人员 maintain mode
                 //     break;
@@ -161,11 +222,11 @@ void loop()
                 // 0->STOP  1->FORWARD  2->BACK   3->LEFT   4->RIGHT   5->TURNLEFT  6->TURNRIGHT
                 lPulse = 0;
                 rPulse = 0;
-            Serial.println("FIN");
+            // Serial.print()
 
     }
         }
-    }
+
 }
 
 void STOP(){
@@ -186,7 +247,7 @@ void BACKWARD(){
   analogWrite(rSpeedPort,rPWM);
 }
 void TURNLEFT(){
-  letHalt(left);.
+  letHalt(left);
   letForward(right);
   analogWrite(lSpeedPort,lPWM);
   analogWrite(rSpeedPort,rPWM);

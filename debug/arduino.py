@@ -47,3 +47,12 @@ def mood(bluno):#TODO:return dog mood based on recently acceleration count,1to10
             x,y,z = raw.split(",")
             print("x=",x,",y=",y,",z=",z)
             raw=''
+
+
+def acquire_info(arduino):
+    tot = arduino.read_until("\n");
+    if len(tot) != 3:
+        print "acquire info error."
+    else:
+        print tot
+    arduino.flushInput();

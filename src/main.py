@@ -20,6 +20,10 @@ FRAME_INTERVAL = 0.25
 MAX_BALLLENGTH = 10#FIXME
 TURN_THRESHOLD = 5
 
+dock_state = 0
+lObstacle = 0
+rObstacle = 0
+
 app = Flask("Petty")
 
 iBest = -1.0
@@ -94,7 +98,8 @@ class Command(Enum):
     BACK = 2
     TURNLEFT = 3
     TURNRIGHT = 4
-    SHOOT = 8
+    SHOOT = 5
+    QUERY = 6
 
 class systemState(Enum):
 #    empty = 0 #useless , it's impossible
@@ -231,6 +236,13 @@ def start_http_handler():
 def start_service():
     res=os.system('''mjpg_streamer -i "input_uvc.so -d '''+directPlayDevice+''' -f 10 -y" -o "output_http.so -w www -p 8888"''')#dont forget to change video n
 
+def acquire_info():
+    tot = arduino.read_until("\n");
+    if len(tot) != 3:
+        print "acquire info error."
+    else:
+        print tot
+    arduino.flushInput();
 def ReadRawFile(filepath):
     file = open(filepath)
     try:
@@ -387,6 +399,8 @@ print "step 6 of 6:start dog mood processing service"
 _ = bluno.read_all()#flush the pool
 thread.start_new_thread(mood,())
 thread.start_new_thread(dogAlarm,())
+print "step 6.5 of 6:start car info acquire service"
+thread
 print "step 7 of 6:start autoretrieve service"
 while True:
     #print "R:state=<SystemState>",state
@@ -427,5 +441,5 @@ while True:
                 callUno(Command.FORWARD);
         else:
             print "unable to find base station."
-
+    elif
     time.sleep(FRAME_INTERVAL)
