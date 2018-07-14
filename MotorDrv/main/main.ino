@@ -2,7 +2,7 @@
 #include <Servo.h>
 #include <assert.h>
 #define FRAME_DURATION 50
-#define COLOR_THRESHOLD 150
+#define COLOR_THRESHOLD 500
 #define DANGER_THRESHOLD 15
 int SpeedToPWM[256];
 double lPulse,rPulse;
@@ -122,7 +122,7 @@ void parseArguments(){
   if (Serial.readBytes(str,Serial.available())){
     if (((char)str[0]-'0') ==6 ) befmode = mode;
     mode = (char)str[0]-'0';
-    argument = ((char)str[1]-'0')*10+((char)str[2]-'0');
+//    argument = ((char)str[1]-'0')*10+((char)str[2]-'0');
   }
   else{
     mode = -1;
@@ -162,6 +162,8 @@ void updateDetectors(){
   d2=pulseIn(rUltraSoundEchoPort,HIGH)/58.00;     //检测脉冲宽度，并计算出距离
   Serial.println(d1);
   Serial.println(d2);
+  Serial.println(raw1);
+  Serial.println(raw2);
   lDanger = (d1>DANGER_THRESHOLD)?0:1;
   rDanger = (d2>DANGER_THRESHOLD)?0:1;
 }
@@ -260,7 +262,7 @@ void TURNRIGHT(){
 }
 void SHOOT(){
   digitalWrite(shootPort,HIGH);
-  delay(600);//WITHOUT PID;
+//  delay(600);//WITHOUT PID;
   digitalWrite(shootPort,LOW);
   delay(40);
   mode = 0;

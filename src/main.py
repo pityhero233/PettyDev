@@ -18,7 +18,8 @@ from enum import Enum
 NULL = 424242#MAGIC NUM
 FRAME_INTERVAL = 0.25
 MAX_BALLLENGTH = 10#FIXME
-TURN_THRESHOLD = 5
+TURN_THRESHOLD = 40
+GO_THRESHOLD = 20
 
 dock_state = 0
 lObstacle = 0
@@ -29,11 +30,11 @@ app = Flask("Petty")
 iBest = -1.0
 String = ""
 
-screenx = 640#camera resolution
-screeny = 320
+screenx = 320#camera resolution / 2
+screeny = 240
 
-systemDevice = "/dev/video2"#volatile
-directPlayDevice = "/dev/video1"#volatile
+systemDevice = "/dev/video1"#volatile
+directPlayDevice = "/dev/video2"#volatile
 
 arduinoLoc = "/dev/ttyACM1"#volatile
 blunoLoc = "/dev/ttyACM0"#volatile
@@ -173,7 +174,7 @@ def turnright():
 @app.route('/up')
 def upAuto():
     global state
-    state=systemState.automode_normal
+    state=systemState.automode_retrieving_station
     print('now state=',state)
     return 'auto up'
 @app.route('/down')
@@ -205,7 +206,7 @@ def chg_prf_rd():
 #@app.route('/prefer_timelyshoot') TODO
 @app.route('/statistics')#the statistics.
 def showStatistics():
-    return flask.render_template('report.html',motion=motion,food=foodAmount,water = waterAmount)
+    return flask.render_template('index.html',motion=uMomentum*2.0,food=foodAmount,water = waterAmount)
 
 def debug_print():#print today's momentum.
     dst = '''{'''
@@ -223,13 +224,9 @@ def debug_printB():#MAGIC HACK FIXME
     print '''{8, 10, 12, 13, 15, 13, 31, 35, 45, 46, 42, 52, 71, 67, 70, 41, 35, \
 36, 27, 25, 25, 31, 10, 8}'''
 
-def preciseTurn(angle):
-    pass;
-
 
 
 #EOF---------------------
-
 def start_http_handler():
 	app.run(host='0.0.0.0',port=5000)
 
@@ -255,27 +252,28 @@ def ReadRawFile(filepath):
 def callUno(action,parameter=-1):
     if not arduino.writable():
         print("E:arduino not writable")
-    if (parameter==-1):
-        if action==Command.STOP:
-            arduino.write('111')
-            # time.sleep(0.5)
-            print('writed 111')
-        else:
-            arduino.write(str(action)+" "+str(normalSpeed))
-            # time.sleep(0.5)
-            print('writed ',str(action)+" "+str(normalSpeed))
-    else:
-        if action==Command.STOP:
-            arduino.write('111')
-            #time.sleep(0.5)
-            print('writed 111')
-        else:
-            if parameter>0 and parameter<=99:
-                arduino.write(str(action)+" "+str(parameter))
-                time.sleep(0.5)
-                print('writed ',str(action)+" "+str(normalSpeed))
-            else:
-                print("E:callUno parameter fail")
+    arduino.write(str(action))
+    # if (parameter==-1):
+    #     if action==Command.STOP:
+    #         arduino.write('111')
+    #         # time.sleep(0.5)
+    #         print('writed 111')
+    #     else:
+    #         arduino.write(str(action)+" "+str(normalSpeed))
+    #         # time.sleep(0.5)
+    #         print('writed ',str(action)+" "+str(normalSpeed))
+    # else:
+    #     if action==Command.STOP:
+    #         arduino.write('111')
+    #         #time.sleep(0.5)
+    #         print('writed 111')
+    #     else:
+    #         if parameter>0 and parameter<=99:
+    #             arduino.write(str(action)+" "+str(parameter))
+    #             time.sleep(0.5)
+    #             print('writed ',str(action)+" "+str(normalSpeed))
+    #         else:
+    #             print("E:callUno parameter fail")
 
 def dist(x1,y1,x2,y2):
     return math.sqrt((x1-x2)*(x1-x2)+(y1-y2)*(y1-y2))
@@ -312,28 +310,43 @@ def isFineToShoot():#judge 1.if is night 2. if too frequent (3.if danger)
 
 def mood():#TODO:return dog mood based on recently acceleration count,1to100,integer/float
     global uMomentum,hMomentum,hLastEntry,lastReceiveBluno
+    time.sleep(2)
+
     while True:
         raw=bluno.read_until('\r\n')
-
-        while raw!='':
-            lastReceiveBluno = time.time()
-            x,y,z = raw.split(",")
-            #print("x=",x,",y=",y,",z=",z)
-            if x!='' and y!='' and z!='':
-                uMomentum=math.fabs(int(x))+math.fabs(int(y))+math.fabs(int(z)) #update current
-                hMomentum=hMomentum+uMomentum/3600.0 #add a small bonus
-                if time.localtime(time.time()).tm_hour!=hLastEntry:#if a new hour occours
-                    hLastEntry=time.localtime(time.time()).tm_hour
-                    todayMomentum[hLastEntry-1]=hMomentum
-                    hMomentum=0.0#clear the temp momentum
-                raw=''
-
+        # print raw
+        # print "the type of raw is:"
+        # print type(raw)
+        # print('the len is ',len(raw))
+        if hasThing(raw):
+            if len(raw)<=15:#HACK
+                lastReceiveBluno = time.time()
+                x,y,z = raw.split(",")
+                #print("x=",x,",y=",y,",z=",z)
+                if x!='' and y!='' and z!='':
+                    uMomentum=math.fabs(int(x))+math.fabs(int(y))+math.fabs(int(z)) #update current
+                    hMomentum=hMomentum+uMomentum/3600.0 #add a small bonus
+                    if time.localtime(time.time()).tm_hour!=hLastEntry:#if a new hour occours
+                        hLastEntry=time.localtime(time.time()).tm_hour
+                        todayMomentum[hLastEntry-1]=hMomentum
+                        hMomentum=0.0#clear the temp momentum
+                    raw=''
+            # except BaseException as b:
+            #     pass;
+        time.sleep(0.2)
 def dogAlarm():#thread
     while True:
         if math.fabs(time.time()-lastReceiveBluno)>=5:
             #callUno(Command.RING)
             print "狗狗不见了！"
-            time.sleep(2)
+            time.sleep(1)
+
+def hasThing(obj):
+    if obj is None:
+        return False
+    else:
+        return True
+
 
 def getBlueDot(frame2):#returns a num[] contains [x,y,r]
     lower = (25,85,6)
@@ -372,17 +385,20 @@ def getBlueDot(frame2):#returns a num[] contains [x,y,r]
             datatorep = [int(x),int(y),int(radius)]
             return datatorep
 
-def getDirection():#get the base 's direction
-    dot = None;cnt=0
-    while dot==None:
-        cnt=cnt+1
-        pic = takePhoto();dot = getBlueDot()
-        if cnt>10:
-            print "E:返回基站错误::找不到基站"
-            #sys.exit("sorry,goodbye!")
-            return None;
-    angle = math.asin((dot[0]-screenx/2)/(screeny/2-dot[1]))#in rads
-    return angle;
+# def getDirection():#get the base 's direction
+#     dot = None;cnt=1
+#     while dot==None:
+#         print("%d trying..\n" %(cnt))
+#         cnt=cnt+1
+#         pic = takePhoto();dot = getBlueDot(pic)
+#         if cnt>10:
+#             print "E:返回基站错误::找不到基站"
+#             #sys.exit("sorry,goodbye!")
+#             return None;
+#     print("X:%f Y:%f\n" %( (dot[0]-screenx/2) , (screeny/2-dot[1]) ));
+#     # angle = math.atan((dot[0]-screenx/2)/(screeny/2-dot[1]))#in rads
+#     print("angle:%f\n" %( angle ) )
+#     return angle;
 
 
 #---------------------------------------------------------------------------------
@@ -398,9 +414,10 @@ thread.start_new_thread(start_service,())
 print "step 6 of 6:start dog mood processing service"
 _ = bluno.read_all()#flush the pool
 thread.start_new_thread(mood,())
+time.sleep(3)
 thread.start_new_thread(dogAlarm,())
-print "step 6.5 of 6:start car info acquire service"
-thread
+time.sleep(3)
+# print "step 6.5 of 6:start car info acquire service"
 print "step 7 of 6:start autoretrieve service"
 while True:
     #print "R:state=<SystemState>",state
@@ -425,21 +442,63 @@ while True:
                 time.sleep(random.randint(5,20))
                 state=systemState.automode_normal
     elif (state==systemState.automode_retrieving_station):
-        p = getBlueDot();
-        if (p!=None):
-            ang = getDirection(p[0],p[1])
-            if (math.fabs(ang)>TURN_THRESHOLD):
-                print "now turning "+ang+"angles..."
-                preciseTurn(ang);
+        pic = takePhoto()
+        p = getBlueDot(pic);
+        if (hasThing(p)):
+            if (math.fabs(p[0]-screenx)>TURN_THRESHOLD):
+                print "now turning "+ str(math.fabs(p[0]-screenx)) +"pixel-steps..."
+
+                while (math.fabs(p[0]-screenx)>TURN_THRESHOLD):
+                    if p[0]<screenx:
+                        callUno(Command.TURNRIGHT)
+                        time.sleep(0.3)
+                        callUno(Command.STOP)
+                        time.sleep(1)
+                        pic = takePhoto()
+                        pp = getBlueDot(pic);
+                        while not hasThing(pp):
+                            pic = takePhoto()
+                            pp = getBlueDot(pic);
+                            time.sleep(0.5)
+                            print "base lost while attempting turn"
+                        print "base found."
+                        p = pp#update the direction
+
+                    else:
+                        callUno(Command.TURNLEFT)
+                        time.sleep(0.5)
+                        callUno(Command.STOP)
+                        time.sleep(1)
+                        pic = takePhoto()
+                        pp = getBlueDot(pic);
+                        while not hasThing(pp):
+                            pic = takePhoto()
+                            pp = getBlueDot(pic);
+                            print "base lost while attempting turn"
+                        print "base found."
+                        p = pp#update the direction
+                callUno(Command.STOP)
+                time.sleep(0.5)
                 print "turn done."
-            elif (p[2]>=MAX_BALLLENGTH):
-                callUno(Command.STOP);
-                state = systemState.automode_navigate;
-                print "base arrived. now start navigate."
             else:
-                print("I am forwarding!")
-                callUno(Command.FORWARD);
+                if p[1]>screeny:
+                    print "now going "+ str(math.fabs(p[1]-screeny)) +"pixel-steps..."
+                if (math.fabs(p[1]-screeny)>GO_THRESHOLD):
+                    if p[0]<screenx:
+                        callUno(Command.FORWARD)
+                        time.sleep(0.3)
+                        callUno(Command.STOP)
+                        time.sleep(0.8)
+                    else:
+                        callUno(Command.BACK)
+                        time.sleep(0.3)
+                        callUno(Command.STOP)
+                        time.sleep(0.8)
+                else:
+                    print "go done!"
+                    state = systemState.automode_navigate;
         else:
             print "unable to find base station."
-    elif
+    else:
+        print "new mode.do nothing."
     time.sleep(FRAME_INTERVAL)

@@ -1,0 +1,266 @@
+﻿<!DOCTYPE html>
+<html>
+    <head>
+        <title>Home</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="">
+        <meta name="author" content="">
+
+        <!-- Include All Stylesheet -->
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/font-awesome.min.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/preset.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/animate.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/owl.carousel.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/owl.theme.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/magnific-popup.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/responsive.css') }}">
+        <link id="color-preset" rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/.css') }}">
+        <!-- Favicon Icon -->
+        <link rel="icon"  type="image/png" href="images/favicon.png">
+        <!-- Favicon Icon -->
+        <!--[if lt IE 9]>
+            <script src="js/html5shive.js"></script>
+        <![endif]-->
+
+    </head>
+    <body>
+        <!-- Colorpreset Area Start -->
+        <div class="color-switcher">
+            <a class="toggle-switch" href="#"><i class="fa fa-cog"></i></a>
+            <div class="style-choose">
+                <a href="#"  data-color="preset1"><img alt="Preset" src="images/colorpreset/preset1/preset1.png"></a>
+                <a href="#"  data-color="preset2"><img alt="Preset" src="images/colorpreset/preset2/preset2.png"></a>
+                <a href="#"  data-color="preset3"><img alt="Preset" src="images/colorpreset/preset3/preset3.png"></a>
+                <a href="#"  data-color="preset4"><img alt="Preset" src="images/colorpreset/preset4/preset4.png"></a>
+            </div>
+        </div>
+        <!-- Colorpreset Area End -->
+
+        <!-- Header Area Start -->
+        <header class="header-area">
+            <ul class="social-icon pull-left">
+                <li><a href="#"><i class="fa fa-facebook"></i></a></li>
+                <li><a href="#"><i class="fa fa-twitter"></i></a></li>
+                <li><a href="#"><i class="fa fa-google-plus"></i></a></li>
+                <li><a href="#"><i class="fa fa-instagram"></i></a></li>
+            </ul>
+            <nav class="main-menu hidden-xs hidden-sm">
+                <ul class="menu-left pull-left">
+                    <li class="menu-has-children">
+                        <a href="index.html">Home</a>
+                        <ul>
+                            <li><a href="index.html">Home 1</a></li>
+                            <li><a href="index2.html">Home 2</a></li>
+                            <li><a href="index3.html">Home 3</a></li>
+                            <li class="child-has-children">
+                                <a href="#">Home 4</a>
+                                <ul>
+                                    <li><a href="#">Sample Home 1</a></li>
+                                    <li><a href="#">Sample Home 2</a></li>
+                                    <li class="child-has-children">
+                                        <a href="#">Sample Home 3</a>
+                                        <ul>
+                                            <li><a href="#">Extra Homepage 1</a></li>
+                                            <li><a href="#">Extra Homepage 2</a></li>
+                                            <li><a href="#">Extra Homepage 3</a></li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                    <li><a href="biography.html">Biography</a></li>
+                    <li class="menu-has-children">
+                        <a href="news.html">News</a>
+                        <ul>
+                            <li><a href="newsDetails.html">News Details</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="event.html">Event</a></li>
+                </ul>
+                <div class="pull-left logo-area">
+                    <a href="index.html"><img src="images/home1/logo.png" alt="Logo"></a>
+                </div>
+                <ul class="menu-right pull-left">
+                    <li><a href="photo.html">Photos</a></li>
+                    <li><a href="volunteer.html">Volunteer</a></li>
+                    <li class="menu-has-children">
+                        <a href="shop.html">Shop</a>
+                        <ul>
+                            <li><a href="shopDetails.html">Shop Details</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#">Donate</a></li>
+                </ul>
+            </nav>
+            <ul class="pull-right search-cart">
+                <li><a href="#" id="search-toggle"><i class="fa fa-search"></i></a></li>
+                <li class="user-profile-menu">
+                    <a href="profile.html"><i class="fa fa-user"></i></a>
+                    <ul>
+                        <li><a href="#">My Campaign</a></li>
+                        <li><a href="#">Settings</a></li>
+                        <li><a href="#">Sign Out</a></li>
+                    </ul>
+                </li>
+                <li><a href="#"><i class="fa fa-shopping-basket"></i><span>(2)</span></a></li>
+                <li class="lang-select">
+                    <a href="#">en<i class="fa fa-angle-down"></i></a>
+                    <div id="language">
+                        <a href="#">En</a>
+                        <a href="#">Fr</a>
+                        <a href="#">Br</a>
+                    </div>
+                </li>
+            </ul>
+            <div class="clearfix"></div>
+            <!-- Search Area -->
+            <section class="search-area">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-12 col-xs-12">
+                            <form action="#" method="post" class="search-form">
+                                <input type="search" name="search" placeholder="Search...">
+                                <a href="#" id="search-close"><i class="fa fa-times"></i></a>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </header>
+        <div class="hidden-lg hidden-md" id="toggle-menu">
+            <div class="pull-left logo-area">
+                <a href="index.html"><img src="images/home1/logo.png" alt="Logo"></a>
+            </div>
+            <div class="mobile-menu-toggle pull-right">
+                <a href="#"><i class="fa fa-bars"></i></a>
+            </div>
+            <div class="clearfix"></div>
+            <nav class="mobile-menu pull-left hidden-lg hidden-md">
+                <ul>
+                    <li class="mobile-menu-has-children">
+                        <a href="index.html">Home</a>
+                        <ul>
+                            <li><a href="index.html">Home 1</a></li>
+                            <li><a href="index2.html">Home 2</a></li>
+                            <li><a href="index3.html">Home 3</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="biography.html">Biography</a></li>
+                    <li class="mobile-menu-has-children">
+                        <a href="news.html">News</a>
+                        <ul>
+                            <li><a href="news.html">News</a></li>
+                            <li><a href="newsDetails.html">News Details</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="event.html">Event</a></li>
+                    <li><a href="photo.html">Photos</a></li>
+                    <li><a href="volunteer.html">Volunteer</a></li>
+                    <li class="mobile-menu-has-children">
+                        <a href="shop.html">Shop</a>
+                        <ul>
+                            <li><a href="shop.html">Shop</a></li>
+                            <li><a href="shopDetails.html">Shop Details</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#">Donate</a></li>
+                </ul>
+            </nav>
+        </div>
+        <!-- Header Area End -->
+
+        <!-- Slider Area Start -->
+        <section class="slider-area">
+            <div id="home-one-crousel" class="carousel slide">
+                <div class="carousel-inner" role="listbox">
+                    <div class="item active">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-md-12 col-xs-12">
+                                    <div class="slider-content text-left">
+                                        <h2 class="first-animation">Petty</h2>
+                                        <h3 class="second-animation">宠物最终解决方案<br>the one state solution</h3>
+                                        <a href="#" class="bordered-button fourth-animation">右滑查看狗狗信息<i class="fa fa-long-arrow-right"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="slider-overlay"></div>
+                    </div>
+                    <div class="item">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-md-12 col-xs-12">
+                                    <div class="slider-content text-left">
+                                        <h2 class="first-animation">当前心情</h2>
+                                        <h3 class="second-animation"> {{ motion }}</h3>
+                                        <a href="#" class="bordered-button fourth-animation">Let's Go<i class="fa fa-long-arrow-right"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="slider-overlay"></div>
+                    </div>
+                    <div class="item">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-md-12 col-xs-12">
+                                    <div class="slider-content text-left">
+                                        <h2 class="first-animation">Adam Patrik</h2>
+                                        <h3 class="second-animation">Let's Get To<br>Work in 2016</h3>
+                                        <a href="#" class="bordered-button fourth-animation">Let's Go<i class="fa fa-long-arrow-right"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="slider-overlay"></div>
+                    </div>
+                </div>
+                <!-- Controls -->
+                <a class="left carousel-control" href="#home-one-crousel" role="button" data-slide="prev">
+                    <i class="fa fa-angle-left"></i>
+                </a>
+                <a class="right carousel-control" href="#home-one-crousel" role="button" data-slide="next">
+                    <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+        </section>
+        <!-- Slider Area End -->
+        <!-- <div class="tlinks">Collect from <a href="http://www.cssmoban.com/" >手机网站模板</a></div> -->
+
+
+        <!-- Footer Area Start -->
+        <footer class="footer-area">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-2 col-md-offset-1 col-xs-12 text-center">
+                        <p class="copy-right">&copy; 2018 学军中学 </p>
+                    </div>
+                    <div class="col-md-9 col-xs-12 text-left">
+                        <ul class="footer-menu">
+                            <li class="wow fadeInLeft"><a href="#">了解我们</a></li>
+                            <li class="wow fadeInLeft"><a href="#">使用方式</a></li>
+                            <li class="wow fadeInLeft"><a href="#">联系方式</a></li>
+                            <li class="wow fadeInLeft"><a href="#">其他作品</a></li>
+                            <li class="wow fadeInLeft"><a href="#">最新进展</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </footer>
+        <!-- Footer Area End -->
+        <!-- Include All JavaScript -->
+        <script src="js/jquery.min.js"></script>
+        <script src="js/jquery.appear.js"></script>
+        <script src="js/bootstrap.min.js"></script>
+        <script src="js/owl.carousel.min.js"></script>
+        <script src="js/jquery.magnific-popup.min.js"></script>
+        <script src="js/jquery.countdown.min.js"></script>
+        <script src="js/mixItUp.js"></script>
+        <script src="js/main.js"></script>
+    </body>
+</html>
