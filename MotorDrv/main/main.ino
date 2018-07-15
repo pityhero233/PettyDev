@@ -1,12 +1,13 @@
 #include <PID_v1.h>
 #include <Servo.h>
 #include <assert.h>
+#include <string.h>
 #define FRAME_DURATION 50
 #define COLOR_THRESHOLD 500
 #define DANGER_THRESHOLD 15
 int SpeedToPWM[256];
 double lPulse,rPulse;
-double lPWM=70,rPWM=70;
+double lPWM=73,rPWM=70;
 int totMode=0 ;// 0 - no detection 1 - fore detection 2 - both detection
 double TargetSpeed = 70;//FIXME
 double Kp=0.4, Ki=0.2, Kd=0.06;
@@ -29,7 +30,7 @@ const int lUltraSoundEchoPort = 28;
 const int rUltraSoundEchoPort = 30;
 unsigned long currentMillis,previousMillis;
 
-// bool handmode = false;//默认是专业人员的耐心模式（automode）
+bool handmode = true;//默认是专业人员的耐心模式（automode）
 
 const bool left = true;
 const bool right = false;
@@ -117,17 +118,46 @@ void setup()
 //    PID_R.SetSampleTime(50);
   }
 
+// void parseArguments(){
+//   string str;
+//   if (Serial.available()>0){
+//     str = Serial.readString();
+//     if (str[0]=='6') befmode = mode;
+//     mode = (char)str-'0'
+//     argument = ((char)str[1]-'0')*10+((char)str[2]-'0');
+//   }
+//   else{
+//     mode = -1;
+//   }
+// }
+
 void parseArguments(){
-  char* str;
-  if (Serial.readBytes(str,Serial.available())){
-    if (((char)str[0]-'0') ==6 ) befmode = mode;
-    mode = (char)str[0]-'0';
-//    argument = ((char)str[1]-'0')*10+((char)str[2]-'0');
-  }
-  else{
-    mode = -1;
-  }
+   char s1,s2,s3;
+   if (Serial.available()>0){
+     delay(10);//wait for finish
+     s1 = Serial.read();
+     s2 = Serial.read();
+     s3 = Serial.read();
+     if (s1=='6') befmode = mode;
+     mode = s1 - '0';
+     argument = ((char)s2-'0')*10+((char)s3-'0');
+     Serial.println("Rcvd:");
+     Serial.println(argument);
+   }
 }
+
+// void parseOneArguments(){
+//   char str;
+//   if (Serial.available()>0){
+//     Serial.readBytes(str,sizeof(str))
+//     if (str=='6') befmode = mode;
+//     mode = (char)str-'0'
+// //    argument = ((char)str[1]-'0')*10+((char)str[2]-'0');
+//   }
+//   else{
+//     mode = -1;
+//   }
+// }
 
 void updateDetectors(){
   //1.color detectors
@@ -171,19 +201,19 @@ void updateDetectors(){
 
 void loop()
 {
+    int b1,b2,p;
+    int bef,aft,realPulse;
     currentMillis = millis ();
     if(Serial.available()>0)
     {
         parseArguments();
-
-        }
-       
-                if( currentMillis - previousMillis >= FRAME_DURATION )
+    }
+        if( currentMillis - previousMillis >= FRAME_DURATION )
         {
             previousMillis = currentMillis ;
  //           PID_L.Compute();PID_R.Compute();
             // Serial.print("lPWM=");Serial.print(lPulse);Serial.print(",rPWM=");Serial.println(rPulse);
-              if (true)
+              if (handmode)//normal mode
             {
                 switch(mode)
                 {
@@ -214,9 +244,12 @@ void loop()
                     Serial.println(totMode);
                     mode = befmode;
                     break;
-                // case 7:
-                //     handmode = false;//专业人员 maintain mode
-                //     break;
+                 case 7:
+                     handmode = false;//专业人员 maintain mode
+                     break;
+                 case 8:
+                     handmode = true;
+                     break;
                 default :
                     STOP();
                     break;
@@ -226,9 +259,65 @@ void loop()
                 rPulse = 0;
             // Serial.print()
 
-    }
-        }
+          }else{//auto good mode
+              switch(mode)
+              {
+              case 0:
+                  STOP();
+                  break;
+              case 1:
+                  FORWARD();
+                  break;
+              case 2:
+                  BACKWARD();;
+                  break;
+              case 3:
+                  realPulse = fullcycle*(argument/360.0);
+//                  Serial.println("now turning left...");
 
+                  bef  = aft = rPulse;
+                  aft = bef + realPulse;
+//                  Serial.print(bef);Serial.print(" "); Serial.println(aft);
+                  TURNLEFT();
+                  while (rPulse<=aft){
+//                    Serial.println(rPulse);
+                    delay(10);
+                  }
+                  STOP();
+                  break;
+              case 4:
+              realPulse = fullcycle*(argument/360.0);
+              bef  = aft = lPulse;
+              aft = bef + realPulse;
+              TURNRIGHT();
+              while (lPulse<=aft){
+//                realPulse++;realPulse--;
+              delay(10);
+              }
+              STOP();
+                  break;
+              case 5:
+                  SHOOT();
+                  break;
+              case 6:
+                  updateDetectors();
+                  Serial.print(lDanger);
+                  Serial.print(rDanger);
+                  Serial.println(totMode);
+                  mode = befmode;
+                  break;
+               case 7:
+                   handmode = false;//专业人员 maintain mode
+                   break;
+              case 8:
+                  handmode = true;
+                  break;
+              default :
+                  STOP();
+                  break;
+              }
+          }
+}
 }
 
 void STOP(){
@@ -262,7 +351,7 @@ void TURNRIGHT(){
 }
 void SHOOT(){
   digitalWrite(shootPort,HIGH);
-//  delay(600);//WITHOUT PID;
+  delay(600);//WITHOUT PID;
   digitalWrite(shootPort,LOW);
   delay(40);
   mode = 0;

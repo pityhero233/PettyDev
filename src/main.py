@@ -1,6 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 import numpy as np
+import socket
 import time
 import os
 import thread
@@ -40,6 +41,8 @@ arduinoLoc = "/dev/ttyACM1"#volatile
 blunoLoc = "/dev/ttyACM0"#volatile
 unoLoc = "/dev/ttyACM2"#volatile
 
+s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+s.bind(('192.168.1.157',2018))#volatile
 lastReceiveBluno = time.time()
 
 shootTryout = 0
@@ -340,6 +343,9 @@ def dogAlarm():#thread
             #callUno(Command.RING)
             print "狗狗不见了！"
             time.sleep(1)
+def fetchFoodWater():
+    while True:
+        foodAmount,addr = s.recvfrom(1024)
 
 def hasThing(obj):
     if obj is None:
@@ -417,6 +423,7 @@ thread.start_new_thread(mood,())
 time.sleep(3)
 thread.start_new_thread(dogAlarm,())
 time.sleep(3)
+thread.start_new_thread(fetchFoodWater,())
 # print "step 6.5 of 6:start car info acquire service"
 print "step 7 of 6:start autoretrieve service"
 while True:
@@ -445,7 +452,9 @@ while True:
         pic = takePhoto()
         p = getBlueDot(pic);
         if (hasThing(p)):
+            print "home detected@(%d,%d).rel.p is (%d,%d).\n" % (p[0],p[1],p[0]-screenx,screeny-p[1])
             if (math.fabs(p[0]-screenx)>TURN_THRESHOLD):
+
                 print "now turning "+ str(math.fabs(p[0]-screenx)) +"pixel-steps..."
 
                 while (math.fabs(p[0]-screenx)>TURN_THRESHOLD):
@@ -481,10 +490,10 @@ while True:
                 time.sleep(0.5)
                 print "turn done."
             else:
-                if p[1]>screeny:
-                    print "now going "+ str(math.fabs(p[1]-screeny)) +"pixel-steps..."
+                print "turn has done."
+                print "now going "+ str(math.fabs(p[1]-screeny)) +"pixel-steps..."
                 if (math.fabs(p[1]-screeny)>GO_THRESHOLD):
-                    if p[0]<screenx:
+                    if p[1]<screeny:
                         callUno(Command.FORWARD)
                         time.sleep(0.3)
                         callUno(Command.STOP)
