@@ -42,7 +42,8 @@ blunoLoc = "/dev/ttyACM0"#volatile
 unoLoc = "/dev/ttyACM2"#volatile
 
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-s.bind(('192.168.1.157',2018))#volatile
+s.bind(('0.0.0.0',55555))#volatile,32768-61000;(maybe?)
+
 lastReceiveBluno = time.time()
 
 shootTryout = 0
@@ -104,6 +105,8 @@ class Command(Enum):
     TURNRIGHT = 4
     SHOOT = 5
     QUERY = 6
+    PRECISE = 7
+    HANDMODE = 8
 
 class systemState(Enum):
 #    empty = 0 #useless , it's impossible
@@ -178,12 +181,16 @@ def turnright():
 def upAuto():
     global state
     state=systemState.automode_retrieving_station
+    callUno(Command.PRECISE)
+    time.sleep(0.5)
     print('now state=',state)
     return 'auto up'
 @app.route('/down')
 def downAuto():
     global state
     state=systemState.handmode
+    callUno(Command.HANDMODE)
+    time.sleep(0.5)
     print('now state=',state)
     return 'auto down'
 @app.route('/shoot')
@@ -252,31 +259,15 @@ def ReadRawFile(filepath):
         tempa = tempa.replace(" ","").replace("\n","")
     return tempa
 
-def callUno(action,parameter=-1):
+def callUno(action,parameter=normalSpeed):
     if not arduino.writable():
         print("E:arduino not writable")
-    arduino.write(str(action))
-    # if (parameter==-1):
-    #     if action==Command.STOP:
-    #         arduino.write('111')
-    #         # time.sleep(0.5)
-    #         print('writed 111')
-    #     else:
-    #         arduino.write(str(action)+" "+str(normalSpeed))
-    #         # time.sleep(0.5)
-    #         print('writed ',str(action)+" "+str(normalSpeed))
-    # else:
-    #     if action==Command.STOP:
-    #         arduino.write('111')
-    #         #time.sleep(0.5)
-    #         print('writed 111')
-    #     else:
-    #         if parameter>0 and parameter<=99:
-    #             arduino.write(str(action)+" "+str(parameter))
-    #             time.sleep(0.5)
-    #             print('writed ',str(action)+" "+str(normalSpeed))
-    #         else:
-    #             print("E:callUno parameter fail")
+    else:
+        if parameter>=10  and parameter<=99:
+            arduino.write(str(action)+str(parameter))
+        else:
+            arduino.write(str(action)+"0"+str(parameter))
+
 
 def dist(x1,y1,x2,y2):
     return math.sqrt((x1-x2)*(x1-x2)+(y1-y2)*(y1-y2))
@@ -454,58 +445,34 @@ while True:
         if (hasThing(p)):
             print "home detected@(%d,%d).rel.p is (%d,%d).\n" % (p[0],p[1],p[0]-screenx,screeny-p[1])
             if (math.fabs(p[0]-screenx)>TURN_THRESHOLD):
-
-                print "now turning "+ str(math.fabs(p[0]-screenx)) +"pixel-steps..."
-
-                while (math.fabs(p[0]-screenx)>TURN_THRESHOLD):
-                    if p[0]<screenx:
-                        callUno(Command.TURNRIGHT)
-                        time.sleep(0.3)
-                        callUno(Command.STOP)
-                        time.sleep(1)
-                        pic = takePhoto()
-                        pp = getBlueDot(pic);
-                        while not hasThing(pp):
-                            pic = takePhoto()
-                            pp = getBlueDot(pic);
-                            time.sleep(0.5)
-                            print "base lost while attempting turn"
-                        print "base found."
-                        p = pp#update the direction
-
-                    else:
-                        callUno(Command.TURNLEFT)
-                        time.sleep(0.5)
-                        callUno(Command.STOP)
-                        time.sleep(1)
-                        pic = takePhoto()
-                        pp = getBlueDot(pic);
-                        while not hasThing(pp):
-                            pic = takePhoto()
-                            pp = getBlueDot(pic);
-                            print "base lost while attempting turn"
-                        print "base found."
-                        p = pp#update the direction
+                angle = math.atan((p[0]-screenx)/(screeny-p[1]))
+                print "now attempt to turn %f angle...\n"%(angle)
+                if angle>0:
+                    callUno(Command.TURNRIGHT,int(angle))
+                else:
+                    callUno(Command.TURNLEFT,int(angle))
                 callUno(Command.STOP)
                 time.sleep(0.5)
                 print "turn done."
             else:
                 print "turn has done."
                 print "now going "+ str(math.fabs(p[1]-screeny)) +"pixel-steps..."
-                if (math.fabs(p[1]-screeny)>GO_THRESHOLD):
-                    if p[1]<screeny:
-                        callUno(Command.FORWARD)
-                        time.sleep(0.3)
-                        callUno(Command.STOP)
-                        time.sleep(0.8)
-                    else:
-                        callUno(Command.BACK)
-                        time.sleep(0.3)
-                        callUno(Command.STOP)
-                        time.sleep(0.8)
-                else:
-                    print "go done!"
-                    state = systemState.automode_navigate;
+                # if (math.fabs(p[1]-screeny)>GO_THRESHOLD):
+                #     if p[1]<screeny:
+                #         callUno(Command.FORWARD)
+                #         time.sleep(0.3)
+                #         callUno(Command.STOP)
+                #         time.sleep(0.8)
+                #     else:
+                #         callUno(Command.BACK)
+                #         time.sleep(0.3)
+                #         callUno(Command.STOP)
+                #         time.sleep(0.8)
+                # else:
+                #     print "go done!"
+                #     state = systemState.automode_navigate;
+                callUno(Command.FORWARD)
+                state = systemState.automode_navigate
         else:
             print "unable to find base station."
     else:
