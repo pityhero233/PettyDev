@@ -5,7 +5,7 @@ import RPi.GPIO as GPIO
 import time
 import socket
 sck = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-
+fullbucket = 14.5
 def checkdist():
         GPIO.output(2,GPIO.HIGH)
         time.sleep(0.000015)
@@ -30,6 +30,8 @@ def clean():
 init()
 
 while True:
-    sck.sendto('hellworld',('192.168.1.157',2018))
+    d = checkdist()
+    percent = (100-d/fullbucket*100)
+    sck.sendto(str(percent),('192.168.1.194',2018))#volatile
     time.sleep(0.5)
 clean()

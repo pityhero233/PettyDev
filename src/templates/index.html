@@ -28,7 +28,7 @@
     </head>
     <body>
         <!-- Colorpreset Area Start -->
-        <div class="color-switcher">
+        <!-- <div class="color-switcher">
             <a class="toggle-switch" href="#"><i class="fa fa-cog"></i></a>
             <div class="style-choose">
                 <a href="#"  data-color="preset1"><img alt="Preset" src="images/colorpreset/preset1/preset1.png"></a>
@@ -36,7 +36,7 @@
                 <a href="#"  data-color="preset3"><img alt="Preset" src="images/colorpreset/preset3/preset3.png"></a>
                 <a href="#"  data-color="preset4"><img alt="Preset" src="images/colorpreset/preset4/preset4.png"></a>
             </div>
-        </div>
+        </div> -->
         <!-- Colorpreset Area End -->
 
         <!-- Header Area Start -->
@@ -184,7 +184,7 @@
                                     <div class="slider-content text-left">
                                         <h2 class="first-animation">Petty</h2>
                                         <h3 class="second-animation">宠物最终解决方案<br>the one state solution</h3>
-                                        <a href="#" class="bordered-button fourth-animation">右滑查看狗狗信息<i class="fa fa-long-arrow-right"></i></a>
+                                        <a href="{{ url_for('static', filename='report.html') }}" class="bordered-button fourth-animation">右滑查看狗狗信息<i class="fa fa-long-arrow-right"></i></a>
                                     </div>
                                 </div>
                             </div>
@@ -198,7 +198,7 @@
                                     <div class="slider-content text-left">
                                         <h2 class="first-animation">当前心情</h2>
                                         <h3 class="second-animation"> {{ motion }}</h3>
-                                        <a href="#" class="bordered-button fourth-animation">Let's Go<i class="fa fa-long-arrow-right"></i></a>
+                                        <a href="#" class="bordered-button fourth-animation">右滑查看食水状态<i class="fa fa-long-arrow-right"></i></a>
                                     </div>
                                 </div>
                             </div>
@@ -210,9 +210,23 @@
                             <div class="row">
                                 <div class="col-md-12 col-xs-12">
                                     <div class="slider-content text-left">
-                                        <h2 class="first-animation">Adam Patrik</h2>
-                                        <h3 class="second-animation">Let's Get To<br>Work in 2016</h3>
-                                        <a href="#" class="bordered-button fourth-animation">Let's Go<i class="fa fa-long-arrow-right"></i></a>
+                                        <h2 class="first-animation">当前食物</h2>
+                                        <h3 class="second-animation">{{ food }}</h3>
+                                        <a href="#" class="bordered-button fourth-animation">右滑查看狗狗水量<i class="fa fa-long-arrow-right"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="slider-overlay"></div>
+                    </div>
+                    <div class="item">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-md-12 col-xs-12">
+                                    <div class="slider-content text-left">
+                                        <h2 class="first-animation">当前水量</h2>
+                                        <h3 class="second-animation">{{ water }}</h3>
+                                        <a href="#" class="bordered-button fourth-animation">回到主页<i class="fa fa-long-arrow-right"></i></a>
                                     </div>
                                 </div>
                             </div>
@@ -254,13 +268,13 @@
         </footer>
         <!-- Footer Area End -->
         <!-- Include All JavaScript -->
-        <script src="js/jquery.min.js"></script>
-        <script src="js/jquery.appear.js"></script>
-        <script src="js/bootstrap.min.js"></script>
-        <script src="js/owl.carousel.min.js"></script>
-        <script src="js/jquery.magnific-popup.min.js"></script>
-        <script src="js/jquery.countdown.min.js"></script>
-        <script src="js/mixItUp.js"></script>
-        <script src="js/main.js"></script>
+        <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/jquery.appear.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/owl.carousel.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/jquery.magnific-popup.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/jquery.countdown.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/mixItUp.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     </body>
 </html>
