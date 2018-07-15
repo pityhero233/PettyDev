@@ -13,7 +13,7 @@ double TargetSpeed = 70;//FIXME
 double Kp=0.4, Ki=0.2, Kd=0.06;
 double befmode = 0;
 //double  Kp=0, Ki=0,Kd=0;
-const int fullcycle = 15700;
+const int fullcycle = 13700;
 
 const int shootPort = 26;//volatile
 const int lSpeedPort = 2;//checked
@@ -141,8 +141,8 @@ void parseArguments(){
      if (s1=='6') befmode = mode;
      mode = s1 - '0';
      argument = ((char)s2-'0')*10+((char)s3-'0');
-     Serial.println("Rcvd:");
-     Serial.println(argument);
+//     Serial.println("Rcvd:");
+//     Serial.println(argument);
    }
 }
 
@@ -177,25 +177,25 @@ void updateDetectors(){
     totMode = 3;
   }
   //2.ultra detectors
-  static float d1,d2;
-  digitalWrite(lUltraSoundTrigPort,LOW);
-  delayMicroseconds(2);
-  digitalWrite(lUltraSoundTrigPort,HIGH);
-  delayMicroseconds(10);
-  digitalWrite(lUltraSoundTrigPort,LOW);
-  d1=pulseIn(lUltraSoundEchoPort,HIGH)/58.00;     //检测脉冲宽度，并计算出距离
-   digitalWrite(rUltraSoundTrigPort,LOW);
-  delayMicroseconds(2);
-  digitalWrite(rUltraSoundTrigPort,HIGH);
-  delayMicroseconds(10);
-  digitalWrite(rUltraSoundTrigPort,LOW);
-  d2=pulseIn(rUltraSoundEchoPort,HIGH)/58.00;     //检测脉冲宽度，并计算出距离
-  Serial.println(d1);
-  Serial.println(d2);
-  Serial.println(raw1);
-  Serial.println(raw2);
-  lDanger = (d1>DANGER_THRESHOLD)?0:1;
-  rDanger = (d2>DANGER_THRESHOLD)?0:1;
+//  static float d1,d2;
+//  digitalWrite(lUltraSoundTrigPort,LOW);
+//  delayMicroseconds(2);
+//  digitalWrite(lUltraSoundTrigPort,HIGH);
+//  delayMicroseconds(10);
+//  digitalWrite(lUltraSoundTrigPort,LOW);
+//  d1=pulseIn(lUltraSoundEchoPort,HIGH)/58.00;     //检测脉冲宽度，并计算出距离
+//   digitalWrite(rUltraSoundTrigPort,LOW);
+//  delayMicroseconds(2);
+//  digitalWrite(rUltraSoundTrigPort,HIGH);
+//  delayMicroseconds(10);
+//  digitalWrite(rUltraSoundTrigPort,LOW);
+//  d2=pulseIn(rUltraSoundEchoPort,HIGH)/58.00;     //检测脉冲宽度，并计算出距离
+////  Serial.println(d1);
+////  Serial.println(d2);
+////  Serial.println(raw1);
+////  Serial.println(raw2);
+//  lDanger = (d1>DANGER_THRESHOLD)?0:1;
+//  rDanger = (d2>DANGER_THRESHOLD)?0:1;
 }
 
 
@@ -239,8 +239,6 @@ void loop()
                     break;
                 case 6:
                     updateDetectors();
-                    Serial.print(lDanger);
-                    Serial.print(rDanger);
                     Serial.println(totMode);
                     mode = befmode;
                     break;
