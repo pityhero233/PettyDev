@@ -107,50 +107,55 @@
                 </li>
 
                 <!-- Page 2 Gallery One -->
+
+
+
+
+
                 <li>
                     <div class="cd-full-width">
                         <div class="container-fluid js-tm-page-content" data-page-no="2" data-page-type="gallery">
                             <div class="tm-img-gallery-container">
                                 <div class="tm-img-gallery gallery-one">
                                 <!-- Gallery One pop up connected with JS code below -->
-                                    <div class="tm-img-gallery-info-container">
-                                        <h2 class="tm-text-title tm-gallery-title tm-white"><span class="tm-white">宠物状态分析</span></h2>
-                                        <p class="tm-text">基于前沿科技的大数据算法，我们为您准备了一份属于您与您宠物自己的大数据报告。
-                                        </p>
-                                    </div>
-                                    <div class="grid-item">
-                                        <figure class="effect-ruby">
-                                            <img src="{{ url_for('static', filename='img/tm-img-01-tn.jpg') }}" alt="Image" class="img-fluid tm-img">
-                                            <figcaption>
-                                                <h2 class="tm-figure-title">饮食状态</h2>
-                                                <h4><br> </h4>
-                                                <p class="tm-figure-description">今天狗狗共计食用约 <font color="aqua"><b>0.75 </b></font>kg 食物，相比同年龄品种狗狗<font color="aqua"><b>0.65</b></font>kg的平均值，数据<font color="red"><b>基本持平</b></font>。</p>
-                                                <a href="img/tm-img-01.jpg">View more</a>
-                                            </figcaption>
-                                        </figure>
-                                    </div>
-                                    <div class="grid-item">
-                                        <figure class="effect-ruby">
-                                            <img src="{{ url_for('static', filename='img/tm-img-02-tn.jpg') }}" alt="Image" class="img-fluid tm-img">
-                                            <figcaption>
-                                                <h2 class="tm-figure-title">宠物运动状态</h2>
-                                                <p class="tm-figure-description">今天狗狗运动评分为<font color="aqua"><b>65</b></font>分，<font color="red"><b>高</b></font>于本月平均水平。好样的！</p>
-                                                <a href="img/tm-img-02.jpg">View more</a>
-                                            </figcaption>
-                                        </figure>
-                                    </div>
-                                    <div class="grid-item">
-                                        <figure class="effect-ruby">
-                                            <img src="{{ url_for('static', filename='img/tm-img-03-tn.jpg') }}" alt="Image" class="img-fluid tm-img">
-                                            <figcaption>
-                                                <h2 class="tm-figure-title">捡球与互动</h2>
-                                                <p class="tm-figure-description">本日机器共计射球<font color="aqua"><b>15</b></font>次，狗狗成功捡回<font color="aqua"><b>8</b></font>次，响应率约为<font color="aqua"><b>53.3 %</b></font>，响应率<font color="aqua"><b>高</b></font>于平均水平。</p>
-                                                <a href="img/tm-img-03.jpg">View more</a>
-                                            </figcaption>
-                                        </figure>
-                                    </div>
-                                    <div class="grid-item">
-                                        <figure class="effect-ruby">
+                                <div class="tm-img-gallery-info-container">
+                                    <h2 class="tm-text-title tm-gallery-title tm-white"><span class="tm-white">宠物状态分析</span></h2>
+                                    <p class="tm-text">基于前沿科技的大数据算法，我们为您准备了一份属于您与您宠物自己的大数据报告。
+                                    </p>
+                                </div>
+                                <div class="grid-item">
+                                    <figure class="effect-ruby">
+                                        <img src="{{ url_for('static', filename='img/tm-img-01-tn.jpg') }}" alt="Image" class="img-fluid tm-img">
+                                        <figcaption>
+                                            <h2 class="tm-figure-title">饮食状态</h2>
+                                            <h4><br> </h4>
+                                            <p class="tm-figure-description">今天狗狗共计食用约 <font color="aqua"><b>{{ foodKg }} </b></font>kg 食物，相比同年龄品种狗狗<font color="aqua"><b>{{ avgFoodKg }}</b></font>kg的平均值，数据<font color="red"><b>{{ foodValue }}</b></font>。</p>
+                                            <a href="img/tm-img-01.jpg">View more</a>
+                                        </figcaption>
+                                    </figure>
+                                </div>
+                                <div class="grid-item">
+                                    <figure class="effect-ruby">
+                                        <img src="{{ url_for('static', filename='img/tm-img-02-tn.jpg') }}" alt="Image" class="img-fluid tm-img">
+                                        <figcaption>
+                                            <h2 class="tm-figure-title">宠物运动状态</h2>
+                                            <p class="tm-figure-description">今天狗狗运动评分为<font color="aqua"><b>{{ sportScore }}</b></font>分，<font color="red"><b>{{ sportState }}</b></font>于本月平均水平。好样的！</p>
+                                            <a href="img/tm-img-02.jpg">View more</a>
+                                        </figcaption>
+                                    </figure>
+                                </div>
+                                <div class="grid-item">
+                                    <figure class="effect-ruby">
+                                        <img src="{{ url_for('static', filename='img/tm-img-03-tn.jpg') }}" alt="Image" class="img-fluid tm-img">
+                                        <figcaption>
+                                            <h2 class="tm-figure-title">捡球与互动</h2>
+                                            <p class="tm-figure-description">本日机器共计射球<font color="aqua"><b>15</b></font>次，狗狗成功捡回<font color="aqua"><b>8</b></font>次，响应率约为<font color="aqua"><b>53.3 %</b></font>，响应率<font color="aqua"><b>高</b></font>于平均水平。</p>
+                                            <a href="img/tm-img-03.jpg">View more</a>
+                                        </figcaption>
+                                    </figure>
+                                </div>
+                                <div class="grid-item">
+                                      <figure class="effect-ruby">
                                             <img src="{{ url_for('static', filename='img/tm-img-04-tn.jpg') }}" alt="Image" class="img-fluid tm-img">
                                             <figcaption>
                                                 <h2 class="tm-figure-title">综合评价</h2>
@@ -158,12 +163,12 @@
                                                 <a href="img/tm-img-04.jpg">View more</a>
                                             </figcaption>
                                         </figure>
-                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </li>
+
 
                 <!-- Page 3 Gallery Two -->
                 <li>
@@ -180,7 +185,7 @@
                                     </div>
                                     <div class="grid-item">
                                         <figure class="effect-ruby">
-                                            <img src="img/tm-img-05-tn.jpg" alt="Image" class="img-fluid tm-img">
+                                            <img src="{{ url_for('static', filename='img/1.jpg') }}" alt="Image" class="img-fluid tm-img">
                                             <!-- <figcaption>
                                                 <h2 class="tm-figure-title">Picture <span>One</span></h2>
                                                 <p class="tm-figure-description">Suspendisse id placerat risus. Mauris quis luctus risus.</p>
@@ -190,7 +195,7 @@
                                     </div>
                                     <div class="grid-item">
                                         <figure class="effect-ruby">
-                                            <img src="img/tm-img-06-tn.jpg" alt="Image" class="img-fluid tm-img">
+                                            <img src="{{ url_for('static', filename='img/2.jpg') }}" alt="Image" class="img-fluid tm-img">
                                             <!-- <figcaption>
                                                 <h2 class="tm-figure-title">Picture <span>Two</span></h2>
                                                 <p class="tm-figure-description">Maecenas purus sem, lobortis id odio in sapien.</p>
@@ -200,7 +205,7 @@
                                     </div>
                                     <div class="grid-item">
                                         <figure class="effect-ruby">
-                                            <img src="img/tm-img-07-tn.jpg" alt="Image" class="img-fluid tm-img">
+                                            <img src="{{ url_for('static', filename='img/3.jpg') }}" alt="Image" class="img-fluid tm-img">
                                             <!-- <figcaption>
                                                 <h2 class="tm-figure-title">Picture <span>Three</span></h2>
                                                 <p class="tm-figure-description">Suspendisse id placerat risus. Mauris quis luctus risus.</p>
@@ -210,7 +215,7 @@
                                     </div>
                                     <div class="grid-item">
                                         <figure class="effect-ruby">
-                                            <img src="img/tm-img-08-tn.jpg" alt="Image" class="img-fluid tm-img">
+                                            <img src="{{ url_for('static', filename='img/4.jpg') }}" alt="Image" class="img-fluid tm-img">
                                             <!-- <figcaption>
                                                 <h2 class="tm-figure-title">Picture <span>Four</span></h2>
                                                 <p class="tm-figure-description">Maecenas purus sem, lobortis id odio in sapien.</p>
@@ -220,7 +225,7 @@
                                     </div>
                                     <div class="grid-item">
                                         <figure class="effect-ruby">
-                                            <img src="img/tm-img-09-tn.jpg" alt="Image" class="img-fluid tm-img">
+                                            <img src="{{ url_for('static', filename='img/5.jpg') }}" alt="Image" class="img-fluid tm-img">
                                             <!-- <figcaption>
                                                 <h2 class="tm-figure-title">Picture <span>Five</span></h2>
                                                 <p class="tm-figure-description">Suspendisse id placerat risus. Mauris quis luctus risus.</p>
@@ -230,7 +235,7 @@
                                     </div>
                                     <div class="grid-item">
                                         <figure class="effect-ruby">
-                                            <img src="img/tm-img-10-tn.jpg" alt="Image" class="img-fluid tm-img">
+                                            <img src="{{ url_for('static', filename='img/6.jpg') }}" alt="Image" class="img-fluid tm-img">
                                             <!-- <figcaption>
                                                 <h2 class="tm-figure-title">Picture <span>Six</span></h2>
                                                 <p class="tm-figure-description">Maecenas purus sem, lobortis id odio in sapien.</p>
@@ -405,7 +410,6 @@
                 else {
                     pageContentHeight = $(".cd-hero-slider li:nth-of-type(" + pageNo + ") .js-tm-page-content").height();
                 }
-
                 if($(window).width() >= 992) { offset = 120; }
                 else if($(window).width() < 480) { offset = 40; }
 

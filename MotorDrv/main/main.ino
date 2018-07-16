@@ -28,16 +28,20 @@ const int lUltraSoundTrigPort = 29;
 const int rUltraSoundTrigPort = 31;
 const int lUltraSoundEchoPort = 28;
 const int rUltraSoundEchoPort = 30;
+const int directionPort = 32;
+const int controlPort = 33;
 unsigned long currentMillis,previousMillis;
 
 bool handmode = true;//默认是专业人员的耐心模式（automode）
-
+bool synced = false;
 const bool left = true;
 const bool right = false;
 int mode=0;
 int argument=100;//input speed (if have any)
 int lDanger = 0;
 int rDanger = 0;
+int foreDetector,backDetector;
+bool rights,needToTurn;
 //signed int beginRotatePulse = 0;//- means left , + means right
 signed int pulseLeftToDo = 0;
 //bool directionLeftToDo = left;
@@ -110,6 +114,8 @@ void setup()
     pinMode(rUltraSoundTrigPort,OUTPUT);
     pinMode(lUltraSoundEchoPort,INPUT);
     pinMode(rUltraSoundEchoPort,INPUT);
+    pinMode(directionPort,INPUT);
+    pinMode(controlPort,INPUT);
     attachInterrupt(digitalPinToInterrupt(lReturnPort) , accumulateLPulse, CHANGE);
     attachInterrupt(digitalPinToInterrupt(rReturnPort) , accumulateRPulse, CHANGE);
  //   PID_L.SetMode(AUTOMATIC);
@@ -146,56 +152,26 @@ void parseArguments(){
    }
 }
 
-// void parseOneArguments(){
-//   char str;
-//   if (Serial.available()>0){
-//     Serial.readBytes(str,sizeof(str))
-//     if (str=='6') befmode = mode;
-//     mode = (char)str-'0'
-// //    argument = ((char)str[1]-'0')*10+((char)str[2]-'0');
-//   }
-//   else{
-//     mode = -1;
-//   }
-// }
 
 void updateDetectors(){
   //1.color detectors
   int raw1,raw2;
   raw1 = analogRead(0);
   raw2 = analogRead(1);
-  if ((raw1>COLOR_THRESHOLD)&&(raw2>COLOR_THRESHOLD)){
+//  Serial.println("raw2=");
+//  Serial.println(raw2);
+  if ((raw1>COLOR_THRESHOLD)&&(raw2>700)){
     totMode = 0;
   }
-  else if ((raw1<COLOR_THRESHOLD)&&(raw2>COLOR_THRESHOLD)){
+  else if ((raw1<COLOR_THRESHOLD)&&(raw2>700)){
     totMode = 1;
   }
-  else if ((raw1<COLOR_THRESHOLD)&&(raw2<COLOR_THRESHOLD)){
+  else if ((raw1<COLOR_THRESHOLD)&&(raw2<700)){
     totMode=2;
   }
   else{
     totMode = 3;
   }
-  //2.ultra detectors
-//  static float d1,d2;
-//  digitalWrite(lUltraSoundTrigPort,LOW);
-//  delayMicroseconds(2);
-//  digitalWrite(lUltraSoundTrigPort,HIGH);
-//  delayMicroseconds(10);
-//  digitalWrite(lUltraSoundTrigPort,LOW);
-//  d1=pulseIn(lUltraSoundEchoPort,HIGH)/58.00;     //检测脉冲宽度，并计算出距离
-//   digitalWrite(rUltraSoundTrigPort,LOW);
-//  delayMicroseconds(2);
-//  digitalWrite(rUltraSoundTrigPort,HIGH);
-//  delayMicroseconds(10);
-//  digitalWrite(rUltraSoundTrigPort,LOW);
-//  d2=pulseIn(rUltraSoundEchoPort,HIGH)/58.00;     //检测脉冲宽度，并计算出距离
-////  Serial.println(d1);
-////  Serial.println(d2);
-////  Serial.println(raw1);
-////  Serial.println(raw2);
-//  lDanger = (d1>DANGER_THRESHOLD)?0:1;
-//  rDanger = (d2>DANGER_THRESHOLD)?0:1;
 }
 
 
@@ -203,7 +179,9 @@ void loop()
 {
     int b1,b2,p;
     int bef,aft,realPulse;
+    
     currentMillis = millis ();
+    lPWM=73;rPWM=70;
     if(Serial.available()>0)
     {
         parseArguments();
@@ -211,10 +189,9 @@ void loop()
         if( currentMillis - previousMillis >= FRAME_DURATION )
         {
             previousMillis = currentMillis ;
- //           PID_L.Compute();PID_R.Compute();
-            // Serial.print("lPWM=");Serial.print(lPulse);Serial.print(",rPWM=");Serial.println(rPulse);
               if (handmode)//normal mode
             {
+                if (mode!=6){synced = false;}
                 switch(mode)
                 {
                 case 0:
@@ -238,16 +215,25 @@ void loop()
                     SHOOT();
                     break;
                 case 6:
-                    updateDetectors();
-                    Serial.println(totMode);
-                    mode = befmode;
-                    break;
-                 case 7:
-                     handmode = false;//专业人员 maintain mode
-                     break;
-                 case 8:
-                     handmode = true;
-                     break;
+                        
+                         rights = digitalRead(directionPort);
+                         needToTurn = !digitalRead(controlPort);
+//                         Serial.print(needToTurn);
+                        lPWM=51;rPWM=50;
+                        if (needToTurn && !synced){
+                          if (rights) {TURNRIGHT(); delay(10);}
+                          else {TURNLEFT();delay(10);}
+                        }else{
+                          
+//                          Serial.print("totmode=");
+//                          Serial.println(totMode);
+                          updateDetectors();
+                          
+                          if(totMode==0) {synced=true;FORWARD();}
+                          if(totMode==1&&(synced)) {TURNLEFT();}//Serial.println("ohsihit");
+                          if(totMode==2) {FORWARD();delay(500);STOP();Serial.print("E");}
+                        }
+                        break;
                 default :
                     STOP();
                     break;
@@ -270,17 +256,6 @@ void loop()
                   BACKWARD();;
                   break;
               case 3:
-                  realPulse = fullcycle*(argument/360.0);
-//                  Serial.println("now turning left...");
-
-                  bef  = aft = rPulse;
-                  aft = bef + realPulse;
-//                  Serial.print(bef);Serial.print(" "); Serial.println(aft);
-                  TURNLEFT();
-                  while (rPulse<=aft){
-//                    Serial.println(rPulse);
-                    delay(10);
-                  }
                   STOP();
                   break;
               case 4:
@@ -298,17 +273,7 @@ void loop()
                   SHOOT();
                   break;
               case 6:
-                  updateDetectors();
-                  Serial.print(lDanger);
-                  Serial.print(rDanger);
-                  Serial.println(totMode);
-                  mode = befmode;
-                  break;
-               case 7:
-                   handmode = false;//专业人员 maintain mode
-                   break;
-              case 8:
-                  handmode = true;
+                Serial.print("you are 6! and buggy.");
                   break;
               default :
                   STOP();
@@ -336,13 +301,13 @@ void BACKWARD(){
   analogWrite(rSpeedPort,rPWM);
 }
 void TURNLEFT(){
-  letHalt(left);
+  letBackward(left);
   letForward(right);
   analogWrite(lSpeedPort,lPWM);
   analogWrite(rSpeedPort,rPWM);
 }
 void TURNRIGHT(){
-  letHalt(right);
+  letBackward(right);
   letForward(left);
   analogWrite(lSpeedPort,lPWM);
   analogWrite(rSpeedPort,rPWM);

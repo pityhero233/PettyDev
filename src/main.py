@@ -17,6 +17,23 @@ import cv2
 from enum import Enum
 moodtexts = (u'''狗狗运动量较大，目前处于活跃状态，适合与之玩耍，但要小心安全哦！''' , u'''小狗运动量适中，但未达到高标准。考虑下班后与狗狗玩耍5分钟吧！''' , u'''狗狗运动量较低，是不是心情不好或者身体不舒服？敬请下翻，看看究竟:)''')
 foodtexts = (u'''食物充足，狗狗再也不用担心饿到啦！''',u'''食物较充足，余粮充分，狗狗3~4天内不会被饿到了！''',u'''食物告急，只能支撑1~2天，请尽快补充！''',u'''食物不够啦！''')
+foodValues = (u'''略有超出''', u'''基本持平''', u'''略有下降''')
+
+shootTryout = 0
+lastShootTime = 0
+ballHistory=[]
+todayMomentum=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]#1-24h
+uMomentum=0.0
+hMomentum=0.0
+hLastEntry=-1#last time update todayMomentum
+
+foodAmount = 0;#TODO
+waterAmount = 0;
+motion = 0;
+foodKg = 0.75
+avgFoodKg = 0.65
+foodValue = u'''略有超出'''
+normalSpeed = 40;
 
 NULL = 424242#MAGIC NUM
 FRAME_INTERVAL = 0.25
@@ -36,9 +53,6 @@ String = ""
 screenx = 320#camera resolution / 2
 screeny = 240
 
-systemDevice = "/dev/video1"#volatile
-directPlayDevice = "/dev/video2"#volatile
-
 arduinoLoc = "/dev/ttyACM1"#volatile
 blunoLoc = "/dev/ttyACM0"#volatile
 unoLoc = "/dev/ttyACM2"#volatile
@@ -48,58 +62,14 @@ s.bind(('0.0.0.0',55555))#volatile,32768-61000;(maybe?)
 
 lastReceiveBluno = time.time()
 
-shootTryout = 0
-lastShootTime = 0
-ballHistory=[]
-todayMomentum=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]#1-24h
-uMomentum=0.0
-hMomentum=0.0
-hLastEntry=-1#last time update todayMomentum
-
-foodAmount = 0;#TODO
-waterAmount = 0;
-motion = 0;
-
-normalSpeed = 40;
 
 print "step 1 of 6:perform arduino detection"
 arduino = serial.Serial(arduinoLoc,9600,timeout=1.5,rtscts=True,dsrdtr=True)#FIX
 print("using ",arduino.name," for arduino")
 bluno = serial.Serial(blunoLoc,115200,timeout=1.5)
 print("using",bluno.name," for bluno")
-# uno = serial.Serial(unoLoc,9600,timeout=1.5)
-# print("using",uno.name," for uno")
-
-
-# print "Now running the Serial check."
-# print "please put your hand before the ultrasound detector"
-
-
-def scanUno():
-    port_list = list(serial.tools.list_ports.comports())
-    if len(port_list)<=0:
-        print("E:arduino base not found.")
-        return NULL
-    else:
-        pl1 =list(port_list[0])
-        port_using = pl1[0]
-        arduino = serial.Serial(port_using,57600,timeout = 1.5)
-        print("using ",arduino.name)
-        print("current arduino=",arduino)
-        return arduino
-
-def takePhoto():#take a photo using outside func
-    try:
-        os.system("fswebcam -d "+systemDevice+" -r 640x480 --no-banner tot.jpg")
-        pic = cv2.imread("tot.jpg")
-        return pic
-    except:
-        print "takePhoto Error"
-print "Step 2 of 6 : test navigate camera..."
-currentPhoto=takePhoto()#test if the cam is success
 
 class Command(Enum):
-                 # 0->STOP  1->FORWARD  2->BACK   3->LEFT   4->RIGHT   5->TURNLEFT  6->TURNRIGHT
     STOP = 0
     FORWARD = 1
     BACK = 2
@@ -108,21 +78,18 @@ class Command(Enum):
     SHOOT = 5
     RETRIEVE_STATION = 6
 class systemState(Enum):
-#    empty = 0 #useless , it's impossible
     loading = 1
     handmode = 2
     automode_normal = 3
     automode_shooting = 4
     automode_retrieving_station = 5
     automode_stop = 8
-
 class userPreference(Enum):
     PlayDog = 0
     RandomShoot = 1
     TimelyShoot = 2
 
 state = systemState.loading
-strategy = userPreference.PlayDog#TODO
 #-------------HTTP response part
 @app.route('/')
 def hello_world():
@@ -199,19 +166,9 @@ def pick():
     if state==systemState.handmode:
         callUno(Command.PICK)
     return 'pick done'
-@app.route('/prefer_playdog')
-def chg_prf_pd():
-    strategy = userPreference.PlayDog
-    with open("UserPreferences.pk","wb") as filea:
-        pickle.dump(strategy,filea)
-@app.route('/prefer_random')
-def chg_prf_rd():
-    strategy = userPreference.RandomShoot
-    with open("UserPreferences.pk","wb") as filea:
-        pickle.dump(strategy,filea)
-#@app.route('/prefer_timelyshoot') TODO
 @app.route('/statistics')#the statistics.
 def showStatistics():
+    global uMomentum,foodAmount,foodtext,foodKg,foodValue,foodtexts,moodtexts
     if uMomentum*2.0>100:
         moodtext = moodtexts[0]
     elif uMomentum*2.0>50:
@@ -227,33 +184,18 @@ def showStatistics():
         foodtext = foodtexts[2]
     else:
         foodtext = foodtexts[3]
-    return flask.render_template('index.html',motion=uMomentum*2.0,food=foodAmount,water = waterAmount,moodtext = moodtext,foodtext=foodtext)
+    if foodKg>avgFoodKg and math.fabs(foodKg-avgFoodKg)>=0.1:
+        foodValue = foodValues[0]
+    elif math.fabs(foodKg-avgFoodKg)<=0.1:
+        foodValue = foodValues[1]
+    else:
+        foodValue = foodValues[2]
 
-def debug_print():#print today's momentum.
-    dst = '''{'''
-
-    tot = 0;
-    while (tot<=23):
-        dst.join(todayMomentum[tot])
-        if tot!=23:
-            dst.join(",")
-    dst.join('''}''')
-    print dst
-
-@app.route('/statisticsB')#magic
-def debug_printB():#MAGIC HACK FIXME
-    print '''{8, 10, 12, 13, 15, 13, 31, 35, 45, 46, 42, 52, 71, 67, 70, 41, 35, \
-36, 27, 25, 25, 31, 10, 8}'''
-
-
+    return flask.render_template('index.html',motion=uMomentum*2.0,food=foodAmount,water = waterAmount,moodtext = moodtext,foodtext=foodtext,foodKg=foodKg,avgFoodKg=avgFoodKg,foodValue=foodValue)
 
 #EOF---------------------
 def start_http_handler():
 	app.run(host='0.0.0.0',port=5000)
-
-def start_service():
-    res=os.system('''mjpg_streamer -i "input_uvc.so -d '''+directPlayDevice+''' -f 10 -y" -o "output_http.so -w www -p 8888"''')#dont forget to change video n
-
 def acquire_info():
     tot = arduino.read_until("\n");
     if len(tot) != 3:
@@ -269,7 +211,6 @@ def ReadRawFile(filepath):
         file.close()
         tempa = tempa.replace(" ","").replace("\n","")
     return tempa
-
 def callUno(action,parameter=normalSpeed):
     if not arduino.writable():
         print("E:arduino not writable")
@@ -278,28 +219,8 @@ def callUno(action,parameter=normalSpeed):
             arduino.write(str(action)+str(parameter))
         else:
             arduino.write(str(action)+"0"+str(parameter))
-
-
 def dist(x1,y1,x2,y2):
     return math.sqrt((x1-x2)*(x1-x2)+(y1-y2)*(y1-y2))
-
-def isDangerous(frame1,frame2,px,py):#detect if point(px,py) is in "the moving area of frame"(dog) PASSED
-    gray1 = cv2.cvtColor(frame1,cv2.COLOR_BGR2GRAY)#FIXED 1
-    gray2 = cv2.cvtColor(frame2,cv2.COLOR_BGR2GRAY)#FIXED 2
-    diff = cv2.absdiff(gray1,gray2)
-    _,thr = cv2.threshold(diff,15,255,cv2.THRESH_BINARY)#FIXED 3&4
-    erode_kernel = cv2.getStructuringElement(cv2.MORPH_RECT,(3,3))
-    dilate_kernel = cv2.getStructuringElement(cv2.MORPH_RECT,(15,15))
-    thr = cv2.erode(thr,erode_kernel)
-    thr = cv2.dilate(thr,dilate_kernel)
-    contours,_ = cv2.findContours(thr,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_NONE)
-
-    for tot in contours:
-        ((x,y),radius) = cv2.minEnclosingCircle(tot)
-        if dist(x,y,px,py)<=radius:
-            return True
-    return False
-
 def isFineToShoot():#judge 1.if is night 2. if too frequent (3.if danger)
     dt = math.fabs(time.time()-lastShootTime)
     #1.judge freq
@@ -312,17 +233,12 @@ def isFineToShoot():#judge 1.if is night 2. if too frequent (3.if danger)
         return True
     else:
         return False;
-
 def mood():#TODO:return dog mood based on recently acceleration count,1to100,integer/float
     global uMomentum,hMomentum,hLastEntry,lastReceiveBluno
     time.sleep(2)
 
     while True:
         raw=bluno.read_until('\r\n')
-        # print raw
-        # print "the type of raw is:"
-        # print type(raw)
-        # print('the len is ',len(raw))
         if hasThing(raw):
             if len(raw)<=15:#HACK
                 lastReceiveBluno = time.time()
@@ -345,12 +261,14 @@ def dogAlarm():#thread
             #callUno(Command.RING)
             print "狗狗不见了！"
             time.sleep(1)
+
 def fetchFoodWater():
     global foodAmount
     while True:
         foodAmount2,addr = s.recvfrom(1024)
         if round(float(foodAmount2))>0:#fixed:in case of flush
             foodAmount = round(float(foodAmount2))#update
+            foodKg = foodAmount*0.01*3
 
 def hasThing(obj):
     if obj is None:
@@ -358,70 +276,13 @@ def hasThing(obj):
     else:
         return True
 
-
-def getBlueDot(frame2):#returns a num[] contains [x,y,r]
-    lower = (25,85,6)
-    upper = (64,255,255)
-    LowerBlue = np.array([100, 0, 0])
-    UpperBlue = np.array([130, 255, 255])
-    if True:
-        element = cv2.getStructuringElement(cv2.MORPH_RECT,(5,5))
-
-        HSV =  cv2.cvtColor(frame2,cv2.COLOR_BGR2HSV)
-        #H,S,V = cv2.split(HSV)
-        mask = cv2.inRange(HSV,lower,upper)
-        mask = cv2.erode(mask,None,iterations=2)
-        mask = cv2.dilate(mask,None,iterations=2)
-        contours = cv2.findContours(mask.copy(),cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)[-2]
-        center = None
-
-        maxPercentage = 0
-        maxPercentageContour = None
-        for contour in contours:
-        	((x,y),radius) = cv2.minEnclosingCircle(contour)
-        	contourArea = cv2.contourArea(contour)
-        	if contourArea < 100:
-        		continue
-        	pass;
-        	percentage = contourArea / (radius * radius * 3.1415926)
-        	if percentage>maxPercentage and percentage>0.50:#requires DEBUG
-        		maxPercentageContour = contour
-
-        if (maxPercentageContour!=None):
-            M=cv2.moments(maxPercentageContour)
-            center = (int(M["m10"]/M["m00"]), int(M["m01"] / M["m00"]))
-            ((x,y),radius) = cv2.minEnclosingCircle(contour)
-            cv2.circle(frame2,(int(x),int(y)),int(radius),(0,255,255),2)
-            cv2.circle(frame2,center,5,(0,0,255),-1)
-            datatorep = [int(x),int(y),int(radius)]
-            return datatorep
-
-# def getDirection():#get the base 's direction
-#     dot = None;cnt=1
-#     while dot==None:
-#         print("%d trying..\n" %(cnt))
-#         cnt=cnt+1
-#         pic = takePhoto();dot = getBlueDot(pic)
-#         if cnt>10:
-#             print "E:返回基站错误::找不到基站"
-#             #sys.exit("sorry,goodbye!")
-#             return None;
-#     print("X:%f Y:%f\n" %( (dot[0]-screenx/2) , (screeny/2-dot[1]) ));
-#     # angle = math.atan((dot[0]-screenx/2)/(screeny/2-dot[1]))#in rads
-#     print("angle:%f\n" %( angle ) )
-#     return angle;
-
-
 #---------------------------------------------------------------------------------
 state = systemState.loading
-print "step 3 of 6:read user preferences"
 with open("UserPreferences.pk","rb") as usf:
     strategy = pickle.load(usf)
     print("strategy=",strategy)
 print "step 4 of 6:start user respond service"
 thread.start_new_thread(start_http_handler,())
-print "step 5 of 6:start direct play service"
-thread.start_new_thread(start_service,())
 print "step 6 of 6:start dog mood processing service"
 _ = bluno.read_all()#flush the pool
 thread.start_new_thread(mood,())
@@ -429,7 +290,6 @@ time.sleep(3)
 thread.start_new_thread(dogAlarm,())
 time.sleep(3)
 thread.start_new_thread(fetchFoodWater,())
-# print "step 6.5 of 6:start car info acquire service"
 print "step 7 of 6:start autoretrieve service"
 while True:
     #print "R:state=<SystemState>",state
@@ -446,9 +306,8 @@ while True:
         print "uDogmood=",dogmood
         if dogmood>50:
             #state=systemState.automode_shooting
-            p1 = takePhoto();time.sleep(1); p2 = takePhoto();
-            if not isDangerous(p1,p2,320,240) and isFineToShoot(): #HACK
-                callUno(Command.SHOOT)
+                if isFineToShoot(): #HACK
+                    callUno(Command.SHOOT)
                 print "right to shoot:shoot performed."
                 shootTryout = 0;
                 time.sleep(random.randint(5,20))
