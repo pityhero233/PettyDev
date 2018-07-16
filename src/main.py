@@ -104,10 +104,7 @@ class Command(Enum):
     TURNLEFT = 3
     TURNRIGHT = 4
     SHOOT = 5
-    QUERY = 6
-    PRECISE = 7
-    HANDMODE = 8
-
+    RETRIEVE_STATION = 6
 class systemState(Enum):
 #    empty = 0 #useless , it's impossible
     loading = 1
@@ -115,9 +112,6 @@ class systemState(Enum):
     automode_normal = 3
     automode_shooting = 4
     automode_retrieving_station = 5
-    automode_moving_obstacle = 6
-
-    automode_navigate = 7
     automode_stop = 8
 
 class userPreference(Enum):
@@ -335,8 +329,11 @@ def dogAlarm():#thread
             print "狗狗不见了！"
             time.sleep(1)
 def fetchFoodWater():
+    global foodAmount
     while True:
-        foodAmount,addr = s.recvfrom(1024)
+        foodAmount2,addr = s.recvfrom(1024)
+        if round(float(foodAmount2))>0:#fixed:in case of flush
+            foodAmount = round(float(foodAmount2))#update
 
 def hasThing(obj):
     if obj is None:
@@ -440,41 +437,12 @@ while True:
                 time.sleep(random.randint(5,20))
                 state=systemState.automode_normal
     elif (state==systemState.automode_retrieving_station):
-        pic = takePhoto()
-        p = getBlueDot(pic);
-        if (hasThing(p)):
-            print "home detected@(%d,%d).rel.p is (%d,%d).\n" % (p[0],p[1],p[0]-screenx,screeny-p[1])
-            if (math.fabs(p[0]-screenx)>TURN_THRESHOLD):
-                angle = math.atan((p[0]-screenx)/(screeny-p[1]))
-                print "now attempt to turn %f angle...\n"%(angle)
-                if angle>0:
-                    callUno(Command.TURNRIGHT,int(angle))
-                else:
-                    callUno(Command.TURNLEFT,int(angle))
-                callUno(Command.STOP)
-                time.sleep(0.5)
-                print "turn done."
-            else:
-                print "turn has done."
-                print "now going "+ str(math.fabs(p[1]-screeny)) +"pixel-steps..."
-                # if (math.fabs(p[1]-screeny)>GO_THRESHOLD):
-                #     if p[1]<screeny:
-                #         callUno(Command.FORWARD)
-                #         time.sleep(0.3)
-                #         callUno(Command.STOP)
-                #         time.sleep(0.8)
-                #     else:
-                #         callUno(Command.BACK)
-                #         time.sleep(0.3)
-                #         callUno(Command.STOP)
-                #         time.sleep(0.8)
-                # else:
-                #     print "go done!"
-                #     state = systemState.automode_navigate;
-                callUno(Command.FORWARD)
-                state = systemState.automode_navigate
-        else:
-            print "unable to find base station."
+        callUno(Command.RETRIEVE_STATION)
+        while (arduino.read()!="E"):#EOF(timeout=1.5)
+            time.sleep(1)#be patient...
+        print "navigated."
+        state = automode_stop
     else:
-        print "new mode.do nothing."
+        print "since in a brand-new mode , system halts.\n"
+    print "foodAmount="+str(foodAmount)
     time.sleep(FRAME_INTERVAL)
