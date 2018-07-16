@@ -27,6 +27,7 @@ uMomentum=0.0
 hMomentum=0.0
 hLastEntry=-1#last time update todayMomentum
 
+minShootTime = 60
 foodAmount = 0;#TODO
 waterAmount = 0;
 motion = 0;
@@ -317,7 +318,7 @@ while True:
         while (arduino.read()!="E"):#EOF(timeout=1.5)
             time.sleep(1)#be patient...
         print "navigated."
-        state = automode_stop
+        state = automode_normal
     else:
         print "since in a brand-new mode , system halts.\n"
     print "foodAmount="+str(foodAmount)
