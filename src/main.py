@@ -149,7 +149,6 @@ def turnright():
 def upAuto():
     global state
     state=systemState.automode_retrieving_station
-    callUno(Command.PRECISE)
     time.sleep(0.5)
     print('now state=',state)
     return 'auto up'
@@ -157,7 +156,6 @@ def upAuto():
 def downAuto():
     global state
     state=systemState.handmode
-    callUno(Command.HANDMODE)
     time.sleep(0.5)
     print('now state=',state)
     return 'auto down'
@@ -204,7 +202,7 @@ def showStatistics():
     food=foodAmount,water = waterAmount,moodtext = moodtext,\
     foodtext=foodtext,foodKg=foodKg,avgFoodKg=avgFoodKg,\
     foodValue=foodValue,batteryLife=batteryLife,\
-    sportScore=sportScore，sportState=sportState)
+    sportScore=sportScore,sportState=sportState)
 
 #EOF---------------------
 def start_http_handler():
@@ -252,8 +250,9 @@ def mood():#TODO:return dog mood based on recently acceleration count,1to100,int
 
     while True:
         raw=bluno.read_until('\r\n')
+        print "raw=%s,len=%d"%(raw,len(raw))
         if hasThing(raw):
-            if len(raw)<=15:#HACK
+            if 8<=len(raw)<=15:#HACK
                 lastReceiveBluno = time.time()
                 x,y,z = raw.split(",")
                 #print("x=",x,",y=",y,",z=",z)

@@ -16,7 +16,7 @@ int val11;
 //double  Kp=0, Ki=0,Kd=0;
 const int fullcycle = 13700;
 
-const int shootPort = 26;//volatile
+const int shootPort = 48;//volatile
 const int lSpeedPort = 2;//checked
 const int lControlPortA = 22;
 const int lControlPortB = 23;
@@ -235,9 +235,10 @@ void loop()
                     digitalWrite(redPort,LOW);
                     break;
                 case 6:
+
                          rights = digitalRead(directionPort);
                          needToTurn = !digitalRead(controlPort);
-//                         Serial.print(needToTurn);
+                         // Serial.print(needToTurn);
                         lPWM=51;rPWM=50;
                         if (needToTurn && !synced){
                           if (rights) {TURNRIGHT(); delay(10);}
