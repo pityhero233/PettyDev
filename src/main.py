@@ -15,6 +15,7 @@ from flask import Flask
 import flask
 import cv2
 from enum import Enum
+#definations
 moodtexts = (u'''狗狗运动量较大，目前处于活跃状态，适合与之玩耍，但要小心安全哦！''' , u'''小狗运动量适中，但未达到高标准。考虑下班后与狗狗玩耍5分钟吧！''' , u'''狗狗运动量较低，是不是心情不好或者身体不舒服？敬请下翻，看看究竟:)''')
 foodtexts = (u'''食物充足，狗狗再也不用担心饿到啦！''',u'''食物较充足，余粮充分，狗狗3~4天内不会被饿到了！''',u'''食物告急，只能支撑1~2天，请尽快补充！''',u'''食物不够啦！''')
 foodValues = (u'''略有超出''', u'''基本持平''', u'''略有下降''')
@@ -35,12 +36,14 @@ foodKg = 0.75
 avgFoodKg = 0.65
 foodValue = u'''略有超出'''
 normalSpeed = 40;
-
+batteryLife = 87.0;
 NULL = 424242#MAGIC NUM
 FRAME_INTERVAL = 0.25
 MAX_BALLLENGTH = 10#FIXME
 TURN_THRESHOLD = 40
 GO_THRESHOLD = 20
+sportScore = 35.0;
+avgSport = 45;
 
 dock_state = 0
 lObstacle = 0
@@ -78,6 +81,7 @@ class Command(Enum):
     TURNRIGHT = 4
     SHOOT = 5
     RETRIEVE_STATION = 6
+    QUERY = 7
 class systemState(Enum):
     loading = 1
     handmode = 2
@@ -192,7 +196,15 @@ def showStatistics():
     else:
         foodValue = foodValues[2]
 
-    return flask.render_template('index.html',motion=uMomentum*2.0,food=foodAmount,water = waterAmount,moodtext = moodtext,foodtext=foodtext,foodKg=foodKg,avgFoodKg=avgFoodKg,foodValue=foodValue)
+    if sportScore >= avgSport:
+        sportState = "高"
+    else:
+        sportState = "低"
+    return flask.render_template('index.html',motion=uMomentum*2.0, \
+    food=foodAmount,water = waterAmount,moodtext = moodtext,\
+    foodtext=foodtext,foodKg=foodKg,avgFoodKg=avgFoodKg,\
+    foodValue=foodValue,batteryLife=batteryLife,\
+    sportScore=sportScore，sportState=sportState)
 
 #EOF---------------------
 def start_http_handler():
@@ -293,6 +305,7 @@ time.sleep(3)
 thread.start_new_thread(fetchFoodWater,())
 print "step 7 of 6:start autoretrieve service"
 while True:
+
     #print "R:state=<SystemState>",state
     if math.fabs(uMomentum*2.0)<=0.5:
         print "--"
@@ -322,4 +335,7 @@ while True:
     else:
         print "since in a brand-new mode , system halts.\n"
     print "foodAmount="+str(foodAmount)
+    callUno(action=Command.QUERY)
+    time.sleep(0.5)
+    batteryLife = float(arduino.read_all())
     time.sleep(FRAME_INTERVAL)

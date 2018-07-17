@@ -12,6 +12,7 @@ int totMode=0 ;// 0 - no detection 1 - fore detection 2 - both detection
 double TargetSpeed = 70;//FIXME
 double Kp=0.4, Ki=0.2, Kd=0.06;
 double befmode = 0;
+int val11;
 //double  Kp=0, Ki=0,Kd=0;
 const int fullcycle = 13700;
 
@@ -30,6 +31,7 @@ const int lUltraSoundEchoPort = 28;
 const int rUltraSoundEchoPort = 30;
 const int directionPort = 32;
 const int controlPort = 33;
+const int redPort = 27;
 unsigned long currentMillis,previousMillis;
 
 bool handmode = true;//默认是专业人员的耐心模式（automode）
@@ -116,6 +118,7 @@ void setup()
     pinMode(rUltraSoundEchoPort,INPUT);
     pinMode(directionPort,INPUT);
     pinMode(controlPort,INPUT);
+    pinMode(redPort,OUTPUT);
     attachInterrupt(digitalPinToInterrupt(lReturnPort) , accumulateLPulse, CHANGE);
     attachInterrupt(digitalPinToInterrupt(rReturnPort) , accumulateRPulse, CHANGE);
  //   PID_L.SetMode(AUTOMATIC);
@@ -174,12 +177,19 @@ void updateDetectors(){
   }
 }
 
+float mapVoltage(float x){
+  return 117.785-0.14375*x;
+}
+
+int mapPercent(float voltage){//10.2 0   12.5 100   11.1 70
+  return (int)(-24.4997*voltage*voltage+599.62*voltage-3567.18);
+}
 
 void loop()
 {
     int b1,b2,p;
     int bef,aft,realPulse;
-    
+
     currentMillis = millis ();
     lPWM=73;rPWM=70;
     if(Serial.available()>0)
@@ -189,7 +199,7 @@ void loop()
         if( currentMillis - previousMillis >= FRAME_DURATION )
         {
             previousMillis = currentMillis ;
-              if (handmode)//normal mode
+              if (handmode)//normal mode == true
             {
                 if (mode!=6){synced = false;}
                 switch(mode)
@@ -212,10 +222,19 @@ void loop()
                     delay(FRAME_DURATION-5);
                     break;
                 case 5:
+                    digitalWrite(redPort,HIGH);
+                    delay(500);
+                    digitalWrite(redPort,LOW);
+                    delay(500);
+                    digitalWrite(redPort,HIGH);
+                    delay(500);
+                    digitalWrite(redPort,LOW);
+                    delay(500);
+                    digitalWrite(redPort,HIGH);
                     SHOOT();
+                    digitalWrite(redPort,LOW);
                     break;
                 case 6:
-                        
                          rights = digitalRead(directionPort);
                          needToTurn = !digitalRead(controlPort);
 //                         Serial.print(needToTurn);
@@ -224,61 +243,26 @@ void loop()
                           if (rights) {TURNRIGHT(); delay(10);}
                           else {TURNLEFT();delay(10);}
                         }else{
-                          
+
 //                          Serial.print("totmode=");
 //                          Serial.println(totMode);
                           updateDetectors();
-                          
+
                           if(totMode==0) {synced=true;FORWARD();}
                           if(totMode==1&&(synced)) {TURNLEFT();}//Serial.println("ohsihit");
                           if(totMode==2) {FORWARD();delay(500);STOP();Serial.print("E");}
                         }
                         break;
+                 case 7:
+                    // val11 = (int)(analogRead(1)/4.092);
+                    // Serial.println(myMap((float)(val11%100)/10));
+                    Serial.println(mapPercent(mapVoltage(analogRead(1))));
                 default :
                     STOP();
                     break;
                 }
-                // 0->STOP  1->FORWARD  2->BACK   3->LEFT   4->RIGHT   5->TURNLEFT  6->TURNRIGHT
                 lPulse = 0;
                 rPulse = 0;
-            // Serial.print()
-
-          }else{//auto good mode
-              switch(mode)
-              {
-              case 0:
-                  STOP();
-                  break;
-              case 1:
-                  FORWARD();
-                  break;
-              case 2:
-                  BACKWARD();;
-                  break;
-              case 3:
-                  STOP();
-                  break;
-              case 4:
-              realPulse = fullcycle*(argument/360.0);
-              bef  = aft = lPulse;
-              aft = bef + realPulse;
-              TURNRIGHT();
-              while (lPulse<=aft){
-//                realPulse++;realPulse--;
-              delay(10);
-              }
-              STOP();
-                  break;
-              case 5:
-                  SHOOT();
-                  break;
-              case 6:
-                Serial.print("you are 6! and buggy.");
-                  break;
-              default :
-                  STOP();
-                  break;
-              }
           }
 }
 }
