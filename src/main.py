@@ -244,29 +244,43 @@ def isFineToShoot():#judge 1.if is night 2. if too frequent (3.if danger)
         return True
     else:
         return False;
+
+def extractDigit(word):
+    res = ''
+    for alp in word:
+        if alp.isdigit():
+            res = res+str(alp)
+
+    if res!='':
+        return int(res)
+    else:
+        return None
+
 def mood():#TODO:return dog mood based on recently acceleration count,1to100,integer/float
     global uMomentum,hMomentum,hLastEntry,lastReceiveBluno
-    time.sleep(2)
+    time.sleep(0.5)
 
     while True:
         raw=bluno.read_until('\r\n')
-        print "raw=%s,len=%d"%(raw,len(raw))
-        if hasThing(raw):
-            if 8<=len(raw)<=15:#HACK
+        print "raw=%s"%(raw)
+        if hasThing(raw) and hasThing(extractDigit(raw)):
+            print "raw=%s,"%(extractDigit(raw))
+
+            if extractDigit(raw)>0 :#good
                 lastReceiveBluno = time.time()
-                x,y,z = raw.split(",")
+                # x,y,z = raw.split(",")
                 #print("x=",x,",y=",y,",z=",z)
-                if x!='' and y!='' and z!='':
-                    uMomentum=math.fabs(int(x))+math.fabs(int(y))+math.fabs(int(z)) #update current
-                    hMomentum=hMomentum+uMomentum/3600.0 #add a small bonus
-                    if time.localtime(time.time()).tm_hour!=hLastEntry:#if a new hour occours
-                        hLastEntry=time.localtime(time.time()).tm_hour
-                        todayMomentum[hLastEntry-1]=hMomentum
-                        hMomentum=0.0#clear the temp momentum
-                    raw=''
+                uMomentum = extractDigit(raw)
+                    # uMomentum=math.fabs(int(x))+math.fabs(int(y))+math.fabs(int(z)) #update current
+                    # hMomentum=hMomentum+uMomentum/3600.0 #add a small bonus
+                    # if time.localtime(time.time()).tm_hour!=hLastEntry:#if a new hour occours
+                    #     hLastEntry=time.localtime(time.time()).tm_hour
+                    #     todayMomentum[hLastEntry-1]=hMomentum
+                    #     hMomentum=0.0#clear the temp momentum
+                raw=''
             # except BaseException as b:
             #     pass;
-        time.sleep(0.2)
+
 def dogAlarm():#thread
     while True:
         if math.fabs(time.time()-lastReceiveBluno)>=5:
