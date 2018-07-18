@@ -170,15 +170,15 @@ void updateDetectors() {
   int raw1, raw2;
   raw1 = analogRead(0);
   raw2 = analogRead(1);
-  //  Serial.println("raw2=");
-  //  Serial.println(raw2);
-  if ((raw1 > COLOR_THRESHOLD) && (raw2 > 700)) {
+//    Serial.println("raw2="); //volatile
+//    Serial.println(raw2);
+  if ((raw1 > COLOR_THRESHOLD) && (raw2 > 800)) {
     totMode = 0;
   }
-  else if ((raw1 < COLOR_THRESHOLD) && (raw2 > 700)) {
+  else if ((raw1 < COLOR_THRESHOLD) && (raw2 > 800)) {
     totMode = 1;
   }
-  else if ((raw1 < COLOR_THRESHOLD) && (raw2 < 700)) {
+  else if ((raw1 < COLOR_THRESHOLD) && (raw2 < 800)) {
     totMode = 2;
   }
   else {
@@ -205,7 +205,7 @@ void loop()
     s2 = Serial3.read();
     s3 = Serial3.read();
     homeDirection = (s1 - '0') * 100 + (s2 - '0') * 10 + (s3 - '0');
-    Serial.print("homeDirection="); Serial.println(homeDirection);
+//    Serial.print("homeDirection="); Serial.println(homeDirection);
   }
 
   currentMillis = millis ();
@@ -268,7 +268,7 @@ void loop()
             rights = false;
           }
           // Serial.print(needToTurn);
-          lPWM = 51; rPWM = 50;
+          lPWM = 77; rPWM = 74;
           if (needToTurn && !synced) {
             if (rights) {
               TURNRIGHT();
@@ -280,11 +280,11 @@ void loop()
             }
           } else {
 
-            //                          Serial.print("totmode=");
-            //                          Serial.println(totMode);
+//                                      Serial.print("totmode=");
+//                                      Serial.println(totMode);
             updateDetectors();
 
-            if (totMode == 0) {
+            if (totMode == 0 && (!synced)) {
               synced = true;
               FORWARD();
             }
@@ -293,8 +293,10 @@ void loop()
             }
             if (totMode == 2) {
               FORWARD();
-              delay(500);
+              delay(2000);
               STOP();
+              mode = 0;
+              delay(100);
               Serial.print("E");
             }
           }
