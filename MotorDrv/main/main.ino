@@ -170,15 +170,17 @@ void updateDetectors() {
   int raw1, raw2;
   raw1 = analogRead(0);
   raw2 = analogRead(1);
+//      Serial.println("raw1="); //volatile
+//    Serial.println(raw1);
 //    Serial.println("raw2="); //volatile
 //    Serial.println(raw2);
-  if ((raw1 > COLOR_THRESHOLD) && (raw2 > 800)) {
+  if ((raw1 > COLOR_THRESHOLD) && (raw2 > COLOR_THRESHOLD+20)) {
     totMode = 0;
   }
-  else if ((raw1 < COLOR_THRESHOLD) && (raw2 > 800)) {
+  else if ((raw1 < COLOR_THRESHOLD) && (raw2 > COLOR_THRESHOLD+20)) {
     totMode = 1;
   }
-  else if ((raw1 < COLOR_THRESHOLD) && (raw2 < 800)) {
+  else if ((raw1 < COLOR_THRESHOLD) && (raw2 < COLOR_THRESHOLD+20)) {
     totMode = 2;
   }
   else {
@@ -292,19 +294,52 @@ void loop()
               TURNLEFT(); //Serial.println("ohsihit");
             }
             if (totMode == 2) {
+               
+              FORWARD();
+              delay(1500);
+//              TURNRIGHT();
+//              delay(100);
               FORWARD();
               delay(2000);
+   
+
               STOP();
               mode = 0;
-              delay(100);
+              delay(10);
               Serial.print("E");
             }
           }
           break;
         case 7:
+            Serial.println(76);
           // val11 = (int)(analogRead(1)/4.092);
-          // Serial.println(myMap((float)(val11%100)/10));
-          Serial.println(mapPercent(mapVoltage(analogRead(1))));
+//          Serial.println(analogRead(A1)); //hacked.
+//          Serial.println(mapVoltage(analogRead(A1)));
+//          Serial.println(mapPercent(mapVoltage(analogRead(A1))));
+        case 8://show
+            BACKWARD();
+            delay(1500);
+            TURNRIGHT();
+            delay(500);
+            FORWARD();
+            delay(500);
+            TURNRIGHT();
+            delay(500);
+            FORWARD();
+            delay(500);
+            TURNRIGHT();
+            delay(500);
+            FORWARD();
+            delay(500);
+            TURNRIGHT();
+            delay(500);
+            FORWARD();
+            delay(500);
+            TURNRIGHT();
+            delay(500);
+            FORWARD();
+            delay(500);
+            STOP();
         default :
           STOP();
           break;
@@ -351,3 +386,4 @@ void SHOOT() {
   delay(40);
   mode = 0;
 }
+

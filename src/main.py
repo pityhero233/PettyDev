@@ -195,9 +195,9 @@ def showStatistics():
         foodValue = foodValues[2]
 
     if sportScore >= avgSport:
-        sportState = "高"
+        sportState = u'''高'''
     else:
-        sportState = "低"
+        sportState = u'''低'''
     return flask.render_template('index.html',motion=uMomentum*2.0, \
     food=foodAmount,water = waterAmount,moodtext = moodtext,\
     foodtext=foodtext,foodKg=foodKg,avgFoodKg=avgFoodKg,\
@@ -344,11 +344,15 @@ while True:
         while (arduino.read()!="E"):#EOF(timeout=1.5)
             time.sleep(1)#be patient...
         print "navigated."
-        state = automode_normal
+        batteryLife =100.0
+
+        state = systemState.automode_normal
     else:
         print "since in a brand-new mode , system halts.\n"
     print "foodAmount="+str(foodAmount)
-    callUno(action=Command.QUERY)
     time.sleep(0.5)
-    batteryLife = float(arduino.read_all())
+    batteryLife = batteryLife-0.02#HACK
+    if batteryLife<=0:
+        systemState = systemState.automode_retrieving_station
+
     time.sleep(FRAME_INTERVAL)

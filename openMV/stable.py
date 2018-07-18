@@ -8,6 +8,12 @@ green_threshold = (0, 100, -29, -10, 35, 68)
 green_threshold = (0, 100, -16, -5, 16, 68)
 green_threshold = (0, 100, -20, -7, 10, 41)
 green_threshold = (0, 100, -27, -2, 36, 60)
+blue_threshold = (11, 69, -13, 0, -14, -1)
+blue_threshold = (0, 69, -13, -4, -17, -3)
+blue_threshold = (0, 53, -13, -4, -18, 1)
+blue_threshold = (0, 53, -13, -2, -24, -2)
+blue_threshold = (0, 50, -12, -1, -18, 3)
+yellow_threshold = (0, 72, -10, 1, 11, 42)
 #设置绿色的阈值，括号里面的数值分别是L A B 的最大值和最小值（minL, maxL, minA,
 # maxA, minB, maxB），LAB的值在图像左侧三个坐标图中选取。如果是灰度图，则只需
 #设# 问吴老师 模板是什么？置（min, max）两个数字即可。
@@ -39,7 +45,7 @@ while(True):
     img = sensor.snapshot() # 从感光芯片获得一张图像
     img = img.lens_corr(2.5,1.0)
 
-    blobs = img.find_blobs([green_threshold])
+    blobs = img.find_blobs([green_threshold],area_threshold = 1,pixels_threshold = 1)
     biggestArea = 0;
     bigBlob = None
     turnDone.low();
@@ -51,7 +57,6 @@ while(True):
             if b.area() > biggestArea :
                 biggestArea = b.area()
                 bigBlob = b# 问吴老师 模板是什么？
-
         img.draw_cross(bigBlob[5], bigBlob[6]) # cx, cy
         circlex = bigBlob[5]
         circley = bigBlob[6]# 问吴老师 模板是什么？
