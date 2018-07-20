@@ -46,6 +46,8 @@ int lDanger = 0;
 int rDanger = 0;
 int foreDetector, backDetector;
 bool rights;
+Servo left,right;
+int lPWMPinPort,rPWMPinPort;
 //signed int beginRotatePulse = 0;//- means left , + means right
 signed int pulseLeftToDo = 0;
 //bool directionLeftToDo = left;
@@ -77,12 +79,10 @@ void letBackward(bool isLeftPort) {
 
 void letHalt(bool isLeftPort) {
   if (isLeftPort) {
-    digitalWrite(lControlPortA, HIGH);
-    digitalWrite(lControlPortB, HIGH);
+    left.write(94);
   }
   else {
-    digitalWrite(rControlPortA, HIGH);
-    digitalWrite(rControlPortB, HIGH);
+    right.write(94);
   }
 }
 
@@ -106,6 +106,9 @@ void accumulateRPulse() {
 
 void setup()
 {
+  left.attach(lPWMPinPort);
+  right.attach(rPWMPinPort);
+
   Serial.begin(9600);
   Serial.setTimeout(100);
   Serial3.begin(19200);//the mv
@@ -170,10 +173,10 @@ void updateDetectors() {
   int raw1, raw2;
   raw1 = analogRead(0);
   raw2 = analogRead(1);
-//      Serial.println("raw1="); //volatile
-//    Serial.println(raw1);
-//    Serial.println("raw2="); //volatile
-//    Serial.println(raw2);
+      Serial.println("raw1="); //volatile
+    Serial.println(raw1);
+    Serial.println("raw2="); //volatile
+    Serial.println(raw2);
   if ((raw1 > COLOR_THRESHOLD) && (raw2 > COLOR_THRESHOLD+20)) {
     totMode = 0;
   }

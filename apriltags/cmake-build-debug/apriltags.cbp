@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="apriltags"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="gcc"/>
+		<Option virtualFolders="CMake Files\;CMake Files\cmake\;CMake Files\..\;CMake Files\..\..\;CMake Files\..\..\..\;CMake Files\..\..\..\..\;CMake Files\..\..\..\..\usr\;CMake Files\..\..\..\..\usr\share\;CMake Files\..\..\..\..\usr\share\OpenCV\;CMake Files\AprilTags\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="/home/pityhero233/projects/apriltags/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/pityhero233/projects/apriltags/cmake-build-debug/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/pityhero233/projects/apriltags/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/pityhero233/projects/apriltags/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/pityhero233/projects/apriltags/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="install/strip">
+				<Option working_dir="/home/pityhero233/projects/apriltags/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/pityhero233/projects/apriltags/cmake-build-debug/Makefile&quot;  VERBOSE=1 install/strip"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/pityhero233/projects/apriltags/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/pityhero233/projects/apriltags/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/pityhero233/projects/apriltags/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="install/local">
+				<Option working_dir="/home/pityhero233/projects/apriltags/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/pityhero233/projects/apriltags/cmake-build-debug/Makefile&quot;  VERBOSE=1 install/local"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/pityhero233/projects/apriltags/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/pityhero233/projects/apriltags/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/pityhero233/projects/apriltags/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="tmp">
+				<Option working_dir="/home/pityhero233/projects/apriltags/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/pityhero233/projects/apriltags/cmake-build-debug/Makefile&quot;  VERBOSE=1 tmp"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/pityhero233/projects/apriltags/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/pityhero233/projects/apriltags/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/pityhero233/projects/apriltags/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="rebuild_cache">
+				<Option working_dir="/home/pityhero233/projects/apriltags/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/pityhero233/projects/apriltags/cmake-build-debug/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/pityhero233/projects/apriltags/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/pityhero233/projects/apriltags/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/pityhero233/projects/apriltags/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="install">
+				<Option working_dir="/home/pityhero233/projects/apriltags/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/pityhero233/projects/apriltags/cmake-build-debug/Makefile&quot;  VERBOSE=1 install"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/pityhero233/projects/apriltags/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/pityhero233/projects/apriltags/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/pityhero233/projects/apriltags/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="list_install_components">
+				<Option working_dir="/home/pityhero233/projects/apriltags/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/pityhero233/projects/apriltags/cmake-build-debug/Makefile&quot;  VERBOSE=1 list_install_components"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/pityhero233/projects/apriltags/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/pityhero233/projects/apriltags/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/pityhero233/projects/apriltags/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="apriltags">
+				<Option output="/home/pityhero233/projects/apriltags/cmake-build-debug/lib/libapriltags.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/pityhero233/projects/apriltags/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/pityhero233/projects/apriltags/cmake-build-debug/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/home/pityhero233/projects/apriltags/AprilTags"/>
+					<Add directory="/home/pityhero233/projects/apriltags/."/>
+					<Add directory="/opt/local/include"/>
+					<Add directory="/usr/include/opencv"/>
+					<Add directory="/usr/include/eigen3"/>
+					<Add directory="/usr/include/c++/5"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/5"/>
+					<Add directory="/usr/include/c++/5/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/5/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/5/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/pityhero233/projects/apriltags/cmake-build-debug/Makefile&quot;  VERBOSE=1 apriltags"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/pityhero233/projects/apriltags/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/pityhero233/projects/apriltags/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/pityhero233/projects/apriltags/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="apriltags/fast">
+				<Option output="/home/pityhero233/projects/apriltags/cmake-build-debug/lib/libapriltags.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/pityhero233/projects/apriltags/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/pityhero233/projects/apriltags/cmake-build-debug/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/home/pityhero233/projects/apriltags/AprilTags"/>
+					<Add directory="/home/pityhero233/projects/apriltags/."/>
+					<Add directory="/opt/local/include"/>
+					<Add directory="/usr/include/opencv"/>
+					<Add directory="/usr/include/eigen3"/>
+					<Add directory="/usr/include/c++/5"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/5"/>
+					<Add directory="/usr/include/c++/5/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/5/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/5/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/pityhero233/projects/apriltags/cmake-build-debug/Makefile&quot;  VERBOSE=1 apriltags/fast"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/pityhero233/projects/apriltags/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/pityhero233/projects/apriltags/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/pityhero233/projects/apriltags/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="edit_cache">
+				<Option working_dir="/home/pityhero233/projects/apriltags/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/pityhero233/projects/apriltags/cmake-build-debug/Makefile&quot;  VERBOSE=1 edit_cache"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/pityhero233/projects/apriltags/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/pityhero233/projects/apriltags/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/pityhero233/projects/apriltags/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="/home/pityhero233/projects/apriltags/src/Edge.cc">
+			<Option target="apriltags"/>
+		</Unit>
+		<Unit filename="/home/pityhero233/projects/apriltags/src/FloatImage.cc">
+			<Option target="apriltags"/>
+		</Unit>
+		<Unit filename="/home/pityhero233/projects/apriltags/src/GLine2D.cc">
+			<Option target="apriltags"/>
+		</Unit>
+		<Unit filename="/home/pityhero233/projects/apriltags/src/GLineSegment2D.cc">
+			<Option target="apriltags"/>
+		</Unit>
+		<Unit filename="/home/pityhero233/projects/apriltags/src/Gaussian.cc">
+			<Option target="apriltags"/>
+		</Unit>
+		<Unit filename="/home/pityhero233/projects/apriltags/src/GrayModel.cc">
+			<Option target="apriltags"/>
+		</Unit>
+		<Unit filename="/home/pityhero233/projects/apriltags/src/Homography33.cc">
+			<Option target="apriltags"/>
+		</Unit>
+		<Unit filename="/home/pityhero233/projects/apriltags/src/MathUtil.cc">
+			<Option target="apriltags"/>
+		</Unit>
+		<Unit filename="/home/pityhero233/projects/apriltags/src/Quad.cc">
+			<Option target="apriltags"/>
+		</Unit>
+		<Unit filename="/home/pityhero233/projects/apriltags/src/Segment.cc">
+			<Option target="apriltags"/>
+		</Unit>
+		<Unit filename="/home/pityhero233/projects/apriltags/src/TagDetection.cc">
+			<Option target="apriltags"/>
+		</Unit>
+		<Unit filename="/home/pityhero233/projects/apriltags/src/TagDetector.cc">
+			<Option target="apriltags"/>
+		</Unit>
+		<Unit filename="/home/pityhero233/projects/apriltags/src/TagFamily.cc">
+			<Option target="apriltags"/>
+		</Unit>
+		<Unit filename="/home/pityhero233/projects/apriltags/src/UnionFindSimple.cc">
+			<Option target="apriltags"/>
+		</Unit>
+		<Unit filename="/home/pityhero233/projects/apriltags/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+		<Unit filename="/home/pityhero233/projects/apriltags/cmake/pods.cmake">
+			<Option virtualFolder="CMake Files\cmake\"/>
+		</Unit>
+		<Unit filename="/home/pityhero233/projects/apriltags/../../../../usr/share/OpenCV/OpenCVConfig-version.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\usr\share\OpenCV\"/>
+		</Unit>
+		<Unit filename="/home/pityhero233/projects/apriltags/../../../../usr/share/OpenCV/OpenCVConfig.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\usr\share\OpenCV\"/>
+		</Unit>
+		<Unit filename="/home/pityhero233/projects/apriltags/../../../../usr/share/OpenCV/OpenCVModules-release.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\usr\share\OpenCV\"/>
+		</Unit>
+		<Unit filename="/home/pityhero233/projects/apriltags/../../../../usr/share/OpenCV/OpenCVModules.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\usr\share\OpenCV\"/>
+		</Unit>
+		<Unit filename="/home/pityhero233/projects/apriltags/AprilTags/Edge.h">
+			<Option virtualFolder="CMake Files\AprilTags\"/>
+		</Unit>
+		<Unit filename="/home/pityhero233/projects/apriltags/AprilTags/FloatImage.h">
+			<Option virtualFolder="CMake Files\AprilTags\"/>
+		</Unit>
+		<Unit filename="/home/pityhero233/projects/apriltags/AprilTags/GLine2D.h">
+			<Option virtualFolder="CMake Files\AprilTags\"/>
+		</Unit>
+		<Unit filename="/home/pityhero233/projects/apriltags/AprilTags/GLineSegment2D.h">
+			<Option virtualFolder="CMake Files\AprilTags\"/>
+		</Unit>
+		<Unit filename="/home/pityhero233/projects/apriltags/AprilTags/Gaussian.h">
+			<Option virtualFolder="CMake Files\AprilTags\"/>
+		</Unit>
+		<Unit filename="/home/pityhero233/projects/apriltags/AprilTags/GrayModel.h">
+			<Option virtualFolder="CMake Files\AprilTags\"/>
+		</Unit>
+		<Unit filename="/home/pityhero233/projects/apriltags/AprilTags/Gridder.h">
+			<Option virtualFolder="CMake Files\AprilTags\"/>
+		</Unit>
+		<Unit filename="/home/pityhero233/projects/apriltags/AprilTags/Homography33.h">
+			<Option virtualFolder="CMake Files\AprilTags\"/>
+		</Unit>
+		<Unit filename="/home/pityhero233/projects/apriltags/AprilTags/MathUtil.h">
+			<Option virtualFolder="CMake Files\AprilTags\"/>
+		</Unit>
+		<Unit filename="/home/pityhero233/projects/apriltags/AprilTags/Quad.h">
+			<Option virtualFolder="CMake Files\AprilTags\"/>
+		</Unit>
+		<Unit filename="/home/pityhero233/projects/apriltags/AprilTags/Segment.h">
+			<Option virtualFolder="CMake Files\AprilTags\"/>
+		</Unit>
+		<Unit filename="/home/pityhero233/projects/apriltags/AprilTags/Tag16h5.h">
+			<Option virtualFolder="CMake Files\AprilTags\"/>
+		</Unit>
+		<Unit filename="/home/pityhero233/projects/apriltags/AprilTags/Tag16h5_other.h">
+			<Option virtualFolder="CMake Files\AprilTags\"/>
+		</Unit>
+		<Unit filename="/home/pityhero233/projects/apriltags/AprilTags/Tag25h7.h">
+			<Option virtualFolder="CMake Files\AprilTags\"/>
+		</Unit>
+		<Unit filename="/home/pityhero233/projects/apriltags/AprilTags/Tag25h9.h">
+			<Option virtualFolder="CMake Files\AprilTags\"/>
+		</Unit>
+		<Unit filename="/home/pityhero233/projects/apriltags/AprilTags/Tag36h11.h">
+			<Option virtualFolder="CMake Files\AprilTags\"/>
+		</Unit>
+		<Unit filename="/home/pityhero233/projects/apriltags/AprilTags/Tag36h11_other.h">
+			<Option virtualFolder="CMake Files\AprilTags\"/>
+		</Unit>
+		<Unit filename="/home/pityhero233/projects/apriltags/AprilTags/Tag36h9.h">
+			<Option virtualFolder="CMake Files\AprilTags\"/>
+		</Unit>
+		<Unit filename="/home/pityhero233/projects/apriltags/AprilTags/TagDetection.h">
+			<Option virtualFolder="CMake Files\AprilTags\"/>
+		</Unit>
+		<Unit filename="/home/pityhero233/projects/apriltags/AprilTags/TagDetector.h">
+			<Option virtualFolder="CMake Files\AprilTags\"/>
+		</Unit>
+		<Unit filename="/home/pityhero233/projects/apriltags/AprilTags/TagFamily.h">
+			<Option virtualFolder="CMake Files\AprilTags\"/>
+		</Unit>
+		<Unit filename="/home/pityhero233/projects/apriltags/AprilTags/UnionFindSimple.h">
+			<Option virtualFolder="CMake Files\AprilTags\"/>
+		</Unit>
+		<Unit filename="/home/pityhero233/projects/apriltags/AprilTags/XYWeight.h">
+			<Option virtualFolder="CMake Files\AprilTags\"/>
+		</Unit>
+		<Unit filename="/home/pityhero233/projects/apriltags/AprilTags/pch.h">
+			<Option virtualFolder="CMake Files\AprilTags\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>

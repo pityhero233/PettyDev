@@ -1,0 +1,14 @@
+/home/pityhero233/projects/apriltags/cmake-build-debug/CMakeFiles/install/strip.dir
+/home/pityhero233/projects/apriltags/cmake-build-debug/CMakeFiles/install/local.dir
+/home/pityhero233/projects/apriltags/cmake-build-debug/CMakeFiles/tmp.dir
+/home/pityhero233/projects/apriltags/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/home/pityhero233/projects/apriltags/cmake-build-debug/CMakeFiles/install.dir
+/home/pityhero233/projects/apriltags/cmake-build-debug/CMakeFiles/list_install_components.dir
+/home/pityhero233/projects/apriltags/cmake-build-debug/CMakeFiles/apriltags.dir
+/home/pityhero233/projects/apriltags/cmake-build-debug/CMakeFiles/edit_cache.dir
+/home/pityhero233/projects/apriltags/cmake-build-debug/example/CMakeFiles/install/strip.dir
+/home/pityhero233/projects/apriltags/cmake-build-debug/example/CMakeFiles/install/local.dir
+/home/pityhero233/projects/apriltags/cmake-build-debug/example/CMakeFiles/edit_cache.dir
+/home/pityhero233/projects/apriltags/cmake-build-debug/example/CMakeFiles/rebuild_cache.dir
+/home/pityhero233/projects/apriltags/cmake-build-debug/example/CMakeFiles/list_install_components.dir
+/home/pityhero233/projects/apriltags/cmake-build-debug/example/CMakeFiles/install.dir
