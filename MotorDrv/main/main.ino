@@ -46,8 +46,8 @@ int lDanger = 0;
 int rDanger = 0;
 int foreDetector, backDetector;
 bool rights;
-Servo left,right;
-int lPWMPinPort,rPWMPinPort;
+Servo leftServo,rightServo;
+int lPWMPinPort=8,rPWMPinPort=9;
 //signed int beginRotatePulse = 0;//- means left , + means right
 signed int pulseLeftToDo = 0;
 //bool directionLeftToDo = left;
@@ -57,32 +57,29 @@ PID PID_R(&rPulse, &rPWM, &TargetSpeed, Kp, Ki, Kd, DIRECT);
 
 void letForward(bool isLeftPort) {
   if (isLeftPort) {
-    digitalWrite(lControlPortA, HIGH);
-    digitalWrite(lControlPortB, LOW);
+    leftServo.write(88);
+
   }
   else {
-    digitalWrite(rControlPortA, HIGH);
-    digitalWrite(rControlPortB, LOW);
+    rightServo.write(100);
   }
 }
 
 void letBackward(bool isLeftPort) {
   if (isLeftPort) {
-    digitalWrite(lControlPortB, HIGH);
-    digitalWrite(lControlPortA, LOW);
+    leftServo.write(100);
   }
   else {
-    digitalWrite(rControlPortB, HIGH);
-    digitalWrite(rControlPortA, LOW);
+    rightServo.write(88);
   }
 }
 
 void letHalt(bool isLeftPort) {
   if (isLeftPort) {
-    left.write(94);
+    leftServo.write(94);
   }
   else {
-    right.write(94);
+    rightServo.write(94);
   }
 }
 
@@ -106,8 +103,8 @@ void accumulateRPulse() {
 
 void setup()
 {
-  left.attach(lPWMPinPort);
-  right.attach(rPWMPinPort);
+  leftServo.attach(lPWMPinPort);
+  rightServo.attach(rPWMPinPort);
 
   Serial.begin(9600);
   Serial.setTimeout(100);
