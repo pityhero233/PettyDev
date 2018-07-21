@@ -23,9 +23,14 @@ foodValues = (u'''略有超出''', u'''基本持平''', u'''略有下降''')
 shootTryout = 0
 lastShootTime = 0
 ballHistory=[]
-todayMomentum=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]#1-24h
+todayMomentum=[8,8,9,9.5,9.2,20,21,25.5,27.5,31.5,40.5,62.5,64.5,61.8,59.1,44.7,50.5,30.2,10.2,8.5,8.5,12,1,2]#1-24h
 uMomentum=0.0
 hMomentum=0.0
+dMomentum=0.0
+for i in todayMomentum:
+    dMomentum=dMomentum+i
+print("fake dmomentum = %d"%(dMomentum))
+
 hLastEntry=-1#last time update todayMomentum
 
 minShootTime = 60
@@ -271,6 +276,9 @@ def mood():#TODO:return dog mood based on recently acceleration count,1to100,int
                 # x,y,z = raw.split(",")
                 #print("x=",x,",y=",y,",z=",z)
                 uMomentum = extractDigit(raw)
+                hMomentum = hMomentum
+                if time.localtime(time.time()).tm_hour!=hLastEntry:
+
                     # uMomentum=math.fabs(int(x))+math.fabs(int(y))+math.fabs(int(z)) #update current
                     # hMomentum=hMomentum+uMomentum/3600.0 #add a small bonus
                     # if time.localtime(time.time()).tm_hour!=hLastEntry:#if a new hour occours

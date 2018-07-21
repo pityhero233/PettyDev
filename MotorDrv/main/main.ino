@@ -57,20 +57,20 @@ PID PID_R(&rPulse, &rPWM, &TargetSpeed, Kp, Ki, Kd, DIRECT);
 
 void letForward(bool isLeftPort) {
   if (isLeftPort) {
-    leftServo.write(88);
+    leftServo.write(78);
 
   }
   else {
-    rightServo.write(100);
+    rightServo.write(110);
   }
 }
 
 void letBackward(bool isLeftPort) {
   if (isLeftPort) {
-    leftServo.write(100);
+    leftServo.write(110);
   }
   else {
-    rightServo.write(88);
+    rightServo.write(78);
   }
 }
 
