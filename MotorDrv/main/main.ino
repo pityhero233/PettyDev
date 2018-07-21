@@ -57,20 +57,20 @@ PID PID_R(&rPulse, &rPWM, &TargetSpeed, Kp, Ki, Kd, DIRECT);
 
 void letForward(bool isLeftPort) {
   if (isLeftPort) {
-    leftServo.write(78);
+    leftServo.write(98);
 
   }
   else {
-    rightServo.write(110);
+    rightServo.write(90);
   }
 }
 
 void letBackward(bool isLeftPort) {
   if (isLeftPort) {
-    leftServo.write(110);
+    leftServo.write(90);
   }
   else {
-    rightServo.write(78);
+    rightServo.write(98);
   }
 }
 
@@ -294,14 +294,14 @@ void loop()
               TURNLEFT(); //Serial.println("ohsihit");
             }
             if (totMode == 2) {
-               
+
               FORWARD();
               delay(1500);
 //              TURNRIGHT();
 //              delay(100);
               FORWARD();
               delay(2000);
-   
+
 
               STOP();
               mode = 0;
@@ -355,17 +355,17 @@ void STOP() {
   letHalt(right);
   mode = 0;
 }
-void FORWARD() {
-  letForward(left);
-  letForward(right);
-  analogWrite(lSpeedPort, lPWM);
-  analogWrite(rSpeedPort, rPWM);
-}
 void BACKWARD() {
-  letBackward(left);
-  letBackward(right);
-  analogWrite(lSpeedPort, lPWM);
-  analogWrite(rSpeedPort, rPWM);
+  leftServo.write(110);
+  rightServo.write(78);
+//  analogWrite(lSpeedPort, lPWM);
+//  analogWrite(rSpeedPort, rPWM);
+}
+void FORWARD() {
+  leftServo.write(78);
+  rightServo.write(110);
+//  analogWrite(lSpeedPort, lPWM);
+//  analogWrite(rSpeedPort, rPWM);
 }
 void TURNLEFT() {
   letBackward(left);
@@ -386,4 +386,3 @@ void SHOOT() {
   delay(40);
   mode = 0;
 }
-
