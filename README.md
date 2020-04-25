@@ -1,5 +1,5 @@
-#Petty - the next generation pet carer.
-下一代宠物看护伴侣
+# Petty - the next generation pet carer.
+一个开源宠物看护伴侣
 
 作者（In alphabetical order）： 
 Fang Yuyang
